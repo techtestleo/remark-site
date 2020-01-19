@@ -4,14 +4,14 @@
   "description": "remark / unified powered blog",
   "main": "index.js",
     "watch": {
-    "test": {
+    "update": {
       "patterns": ["content"],
       "extensions": "md"
     }
   },
   "scripts": {
     "build": "node index.js",
-    "test": "npm run build",
+    "update": "npm run build",
     "watch": "npm-watch"
   },
   "author": "Leo C",
