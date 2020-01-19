@@ -1,0 +1,13 @@
+// Colour
+@import './colors.scss';
+// Text
+@import './text.scss';
+
+body {
+  font-family: $family;
+  background: $classy-1;
+}
+
+h2 {
+  color: $classy-3;
+}
