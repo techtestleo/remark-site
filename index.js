@@ -1,4 +1,3 @@
-require('dotenv').config();
 var unified = require('unified');
 var vfile = require('to-vfile');
 var report = require('vfile-reporter');
@@ -24,49 +23,73 @@ const chalk = require('chalk');
 chalk.level = 3;
 // Chalk styles
 const reading = chalk.yellow;
-const writing = chalk.magenta
+const writing = chalk.magenta;
 const success = chalk.green;
 
+// Load .env file
+require('dotenv').config();
 
 // Global process variables
 const out_dir = process.env.build_directory || 'out';
 const in_dir = process.env.inbound_md_directory || 'content';
 const renderExtension = process.env.render_extension || '.html';
 const scss_dir = process.env.inbound_scss_directory || 'scss';
-const finalStylesheetName = process.env.injected_stylesheet || 'index.css';
-const ignore = process.env.ignore_scss.split(',');
-const ignore_spelling = process.env.ignore_spellcheck.split(',');
+const ignore = process.env.ignore_scss.split(',') || ['constants', 'index.css'];
+const ignore_spelling = process.env.ignore_spellcheck.split(',') || [];
 
-var processor = unified()
-  // enable footnoes
-  .use(markdown, { footnotes: true })
-  .use(
-    remark2retext,
-    unified()
-      .use(english)
-      // check for repeated words words
-      .use(repeated)
-      // A -> An and vice versa
-      .use(indefiniteArticle)
-      // check for spacing      errors
-      .use(spacing)
-      // allow spellcheck to ignore links
-      .use(urls)
-      // check for spelling errors, ignoring the listed words
-      .use(spell, { dictionary, ignore: ignore_spelling })
-  )
-  // ad id's to heading level elements
-  .use(slug)
-  // enable creating a table of linked headings in files that have a "Table of Contents" heading
-  .use(toc)
-  // convert to html syntax tree
-  .use(remark2rehype)
-  // inject stylesheet
-  .use(doc, { css: finalStylesheetName })
-  // convert to html
-  .use(html)
+const doProcessing = (singleFileName) => {
+  // grab .theme from filename
+  const fileTheme = singleFileName.split('.')[1];
+  var processor = unified()
+    // enable footnoes
+    .use(markdown, { footnotes: true })
+    .use(
+      remark2retext,
+      unified()
+        .use(english)
+        // check for repeated words words
+        .use(repeated)
+        // A -> An and vice versa
+        .use(indefiniteArticle)
+        // check for spacing      errors
+        .use(spacing)
+        // allow spellcheck to ignore links
+        .use(urls)
+        // check for spelling errors, ignoring the listed words
+        .use(spell, { dictionary, ignore: ignore_spelling })
+    )
+    // ad id's to heading level elements
+    .use(slug)
+    // enable creating a table of linked headings in files that have a "Table of Contents" heading
+    .use(toc)
+    // convert to html syntax tree
+    .use(remark2rehype)
+    // inject stylesheet
+    .use(doc, { css: `${fileTheme ? fileTheme : 'index'}.css` })
+    // convert to html
+    .use(html)
 
+  processor.process(vfile.readSync(`${in_dir}/${singleFileName}`), function (err, file) {
+    if (err) { throw err; }
+    // Log warnings
+    console.warn(report(file));
 
+    // set the directory
+    file.dirname = out_dir;
+    // convert shortcode emojis
+    var convertedFile = retext()
+      .use(emoji, { convert: 'encode' })
+      .processSync(file);
+
+    // name the file, discarding the .theme 
+    const fileName = singleFileName.split('.')[0];
+    convertedFile.basename = fileName;
+    // set the extension
+    convertedFile.extname = renderExtension;
+    // write file
+    vfile.writeSync(convertedFile)
+  })
+}
 
 /**
  * Get all filenames in a directory
@@ -129,24 +152,9 @@ function main() {
     readFiles(in_dir).then((fileNames) => {
       // iterate over each file name
       fileNames.forEach((singleFileName) => {
-        // process each file
-        processor.process(vfile.readSync(`${in_dir}/${singleFileName}`), function (err, file) {
-          if (err) { throw err; }
-          // Log warnings
-          console.warn(report(file));
 
-          // set the directory
-          file.dirname = out_dir;
-          // convert shortcode emojis
-          var convertedFile = retext()
-            .use(emoji, { convert: 'encode' })
-            .processSync(file);
+        doProcessing(singleFileName);
 
-          // set the extension
-          file.extname = renderExtension;
-          // write file
-          vfile.writeSync(convertedFile)
-        });
       });
     });
   });

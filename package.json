@@ -6,9 +6,9 @@
   "watch": {
     "update": {
       "patterns": [
-        "content"
+        "content", "scss"
       ],
-      "extensions": "md"
+      "extensions":[ "md", "scss"]
     }
   },
   "scripts": {

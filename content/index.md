@@ -2,7 +2,7 @@
 
 # Alpha
 
-Alpha, Omegu.Hey. You
+Alpha, Omega.
 
 ## Table of Contents
 
