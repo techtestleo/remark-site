@@ -2,12 +2,6 @@
 
 ## Table of Contents
 
-## Story 1
+## [Kansas](/story/kansas.html#kansas)
 
-## Story 2
-
-## Story 3
-
-## Story 4
-
-## Story 5
+## [Ticket](/story/ticket.html#ticket)

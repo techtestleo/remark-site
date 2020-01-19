@@ -36,11 +36,11 @@ const renderExtension = process.env.render_extension || '.html';
 const scss_dir = process.env.inbound_scss_directory || 'scss';
 const ignore = process.env.ignore_scss.split(',') || ['constants', 'index.css'];
 const ignore_spelling = process.env.ignore_spellcheck.split(',') || [];
+const ignore_dirs = process.env.ignore_directories.split(',') || [];
+const ignore_ext = process.env.ignore_extensions.split(',') || [];
 
-const doProcessing = (singleFileName) => {
-  // grab .theme from filename
-  const fileTheme = singleFileName.split('.')[1];
-  var processor = unified()
+const make = (fileTheme, nestedPath) => {
+  return processor = unified()
     // enable footnoes
     .use(markdown, { footnotes: true })
     .use(
@@ -64,28 +64,43 @@ const doProcessing = (singleFileName) => {
     .use(toc)
     // convert to html syntax tree
     .use(remark2rehype)
-    // inject stylesheet
-    .use(doc, { css: `${fileTheme ? fileTheme : 'index'}.css` })
+    .use(doc, { css: `${nestedPath ? "../" : ''}${fileTheme ? fileTheme : 'index'}.css` })
     // convert to html
     .use(html)
+}
 
-  processor.process(vfile.readSync(`${in_dir}/${singleFileName}`), function (err, file) {
+/**
+ * 
+ * @param {string} singleFileName 
+ * @param {string} dirPath 
+ */
+const doProcessing = (singleFileName, dirPath) => {
+  // grab .theme from filename
+  const fileTheme = singleFileName.split('.')[1];
+
+  const validTheme = [fileTheme].filter(item => !ignore_ext.includes(item));
+
+  console.log(validTheme)
+
+
+  make(validTheme[0], dirPath).process(vfile.readSync(`${in_dir}${dirPath ? '/' + dirPath : ''}/${singleFileName}`), function (err, file) {
     if (err) { throw err; }
     // Log warnings
     console.warn(report(file));
 
     // set the directory
-    file.dirname = out_dir;
+    file.dirname = out_dir + `${dirPath ? '/' + dirPath : ''}`;
+
+    // name the file, discarding the .theme 
+    const fileName = singleFileName.split('.')[0];
+    file.basename = fileName;
+    // set the extension
+    file.extname = renderExtension;
     // convert shortcode emojis
     var convertedFile = retext()
       .use(emoji, { convert: 'encode' })
       .processSync(file);
 
-    // name the file, discarding the .theme 
-    const fileName = singleFileName.split('.')[0];
-    convertedFile.basename = fileName;
-    // set the extension
-    convertedFile.extname = renderExtension;
     // write file
     vfile.writeSync(convertedFile)
   })
@@ -116,7 +131,7 @@ const renderStylesheets = (scss_fileNames) => {
   return new Promise((resolve, reject) => {
     scss_fileNames.forEach((single_scss) => {
       const result = sass.renderSync({ file: `${scss_dir}/${single_scss}` });
-      fs.writeFileSync(`${out_dir}/${single_scss.replace('.scss', '.css')}`, result.css);
+      fs.writeFileSync(`${out_dir}/${single_scss.replace('.theme.scss', '.css')}`, result.css);
       console.log(writing(`wrote file: ${scss_dir}/${single_scss.replace('.scss', '.css')}`));
     });
     resolve();
@@ -151,13 +166,37 @@ function main() {
     console.log(success('scss processing complete ✅'));
     readFiles(in_dir).then((fileNames) => {
       // iterate over each file name
-      fileNames.forEach((singleFileName) => {
+      const dirNames = fileNames.filter(item => ignore_dirs.includes(item));
+      fileNames = fileNames.filter(item => !ignore_dirs.includes(item));
 
-        doProcessing(singleFileName);
-
-      });
+      if (dirNames.length > 0) {
+        subDirRender(dirNames).then(() => {
+          doRender(fileNames);
+        });
+      }
+      doRender(fileNames);
     });
   });
 }
 
 main();
+
+const doRender = (fileNames) => {
+  fileNames.forEach((singleFileName) => {
+
+    doProcessing(singleFileName);
+
+  });
+}
+
+const subDirRender = (dirNames) => {
+  return new Promise((resolve, reject) => {
+    dirNames.forEach((dir) => {
+      const files_in_dir = fs.readdirSync(`${in_dir}/${dir}`);
+      files_in_dir.forEach((inner_file) => {
+        doProcessing(inner_file, dir);
+      });
+    })
+    resolve();
+  });
+}

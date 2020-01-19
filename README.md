@@ -12,3 +12,6 @@ A static html blog powered by unififed & sass.
 5. npm run watch
 6. Start nginx container
 7. Refresh page to see updates
+
+
+
