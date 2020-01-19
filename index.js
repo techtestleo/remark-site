@@ -15,14 +15,17 @@ var emoji = require('retext-emoji');
 var spacing = require('retext-sentence-spacing');
 var spell = require('retext-spell');
 var indefiniteArticle = require('retext-indefinite-article');
+var repeated = require('retext-repeated-words')
 var dictionary = require('dictionary-en-gb');
 var urls = require('retext-syntax-urls');
 var fs = require('fs');
 var sass = require('node-sass');
 const chalk = require('chalk');
+chalk.level = 3;
 // Chalk styles
-const reading = chalk.bold.yellow;
-const success = chalk.keyword('green');
+const reading = chalk.yellow;
+const writing = chalk.magenta
+const success = chalk.green;
 
 
 // Global process variables
@@ -32,6 +35,7 @@ const renderExtension = process.env.render_extension || '.html';
 const scss_dir = process.env.inbound_scss_directory || 'scss';
 const finalStylesheetName = process.env.injected_stylesheet || 'index.css';
 const ignore = process.env.ignore_scss.split(',');
+const ignore_spelling = process.env.ignore_spellcheck.split(',');
 
 var processor = unified()
   // enable footnoes
@@ -40,18 +44,26 @@ var processor = unified()
     remark2retext,
     unified()
       .use(english)
+      // check for repeated words words
+      .use(repeated)
+      // A -> An and vice versa
       .use(indefiniteArticle)
+      // check for spacing      errors
       .use(spacing)
+      // allow spellcheck to ignore links
       .use(urls)
-      .use(spell, dictionary)
+      // check for spelling errors, ignoring the listed words
+      .use(spell, { dictionary, ignore: ignore_spelling })
   )
   // ad id's to heading level elements
   .use(slug)
-  // enable creating a table of linked headings in files that have a
-  // ## Table of Contents
+  // enable creating a table of linked headings in files that have a "Table of Contents" heading
   .use(toc)
+  // convert to html syntax tree
   .use(remark2rehype)
+  // inject stylesheet
   .use(doc, { css: finalStylesheetName })
+  // convert to html
   .use(html)
 
 
@@ -82,7 +94,7 @@ const renderStylesheets = (scss_fileNames) => {
     scss_fileNames.forEach((single_scss) => {
       const result = sass.renderSync({ file: `${scss_dir}/${single_scss}` });
       fs.writeFileSync(`${out_dir}/${single_scss.replace('.scss', '.css')}`, result.css);
-      console.log(success(`wrote file: ${scss_dir}/${single_scss.replace('.scss', '.css')}`));
+      console.log(writing(`wrote file: ${scss_dir}/${single_scss.replace('.scss', '.css')}`));
     });
     resolve();
   })
@@ -98,7 +110,7 @@ const renderSass = () => {
       // remove directory name and processed files from render list
       scss_fileNames = scss_fileNames.filter(item => !ignore.includes(item));
 
-      console.log(reading(`reading ${scss_fileNames.length} scss files...`));
+      console.log(reading(`reading ${scss_fileNames.length} scss files`));
 
       renderStylesheets(scss_fileNames).then(() => {
         resolve();
@@ -128,7 +140,7 @@ function main() {
           // convert shortcode emojis
           var convertedFile = retext()
             .use(emoji, { convert: 'encode' })
-            .processSync(file)
+            .processSync(file);
 
           // set the extension
           file.extname = renderExtension;

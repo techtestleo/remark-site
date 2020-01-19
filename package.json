@@ -35,12 +35,12 @@
     "retext-emoji": "^6.0.0",
     "retext-english": "^3.0.4",
     "retext-indefinite-article": "^1.1.7",
+    "retext-repeated-words": "^2.0.0",
     "retext-sentence-spacing": "^3.0.0",
     "retext-spell": "^3.0.0",
     "retext-syntax-urls": "^1.0.2",
     "to-vfile": "^6.0.0",
     "unified": "^8.4.2",
-    "unified-stream": "^1.0.5",
     "vfile-reporter": "^6.0.0"
   }
 }
