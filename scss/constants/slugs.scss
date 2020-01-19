@@ -1,5 +1,7 @@
-@import './global.scss';
+#table-of-contents {
+  background-color: $core-5;
+}
 
-.table-of-contents {
-  color: $core-5;
+#part-1 {
+  background-color: $skip-2;
 }

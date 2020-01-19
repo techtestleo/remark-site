@@ -15,3 +15,12 @@ A static html blog powered by unififed & sass.
 
 
 
+# Elements
+
+Heading
+h1, h2, h3, h4, h5
+
+Body text
+p
+
+ul, li

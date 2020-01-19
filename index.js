@@ -42,7 +42,7 @@ const ignore_ext = process.env.ignore_extensions.split(',') || [];
 const make = (fileTheme, nestedPath, fileName) => {
   return processor = unified()
     // enable footnoes
-    .use(markdown, { footnotes: true })
+    .use(markdown, { footnotes: true, gfm: true })
     .use(
       remark2retext,
       unified()
@@ -55,8 +55,8 @@ const make = (fileTheme, nestedPath, fileName) => {
         .use(spacing)
         // allow spellcheck to ignore links
         .use(urls)
-        // check for spelling errors, ignoring the listed words
-        .use(spell, { dictionary, ignore: ignore_spelling })
+      // check for spelling errors, ignoring the listed words
+      // .use(spell, { dictionary, ignore: ignore_spelling })
     )
     // ad id's to heading level elements
     .use(slug)

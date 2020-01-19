@@ -1,5 +1,15 @@
 @import './constants/global.scss';
 
+h1 {
+  text-align: centerß;
+}
+
 body {
+  display: flex;
+  flex-direction: column;
   background-color: $pin-1
+}
+
+#table-of-contents {
+  padding: 1rem;
 }
