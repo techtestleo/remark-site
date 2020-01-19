@@ -4,11 +4,11 @@
 
 ## Stories
 
-A collection of short stories.
+[A collection of short stories.](/story/)
 
 ## Tech
 
-Writing about technology.
+[Writing about technology.](/tech/)
 
 ## Misc
 

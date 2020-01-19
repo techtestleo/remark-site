@@ -39,7 +39,7 @@ const ignore_spelling = process.env.ignore_spellcheck.split(',') || [];
 const ignore_dirs = process.env.ignore_directories.split(',') || [];
 const ignore_ext = process.env.ignore_extensions.split(',') || [];
 
-const make = (fileTheme, nestedPath) => {
+const make = (fileTheme, nestedPath, fileName) => {
   return processor = unified()
     // enable footnoes
     .use(markdown, { footnotes: true })
@@ -64,7 +64,14 @@ const make = (fileTheme, nestedPath) => {
     .use(toc)
     // convert to html syntax tree
     .use(remark2rehype)
-    .use(doc, { css: `${nestedPath ? "../" : ''}${fileTheme ? fileTheme : 'index'}.css` })
+    .use(doc, {
+      title: fileName,
+      css: `${nestedPath ? "../" : ''}${fileTheme ? fileTheme : 'index'}.css`,
+      link: {
+        rel: 'shortcut icon',
+        href: '/favicon.ico'
+      }
+    })
     // convert to html
     .use(html)
 }
@@ -76,14 +83,12 @@ const make = (fileTheme, nestedPath) => {
  */
 const doProcessing = (singleFileName, dirPath) => {
   // grab .theme from filename
+  const fileName = singleFileName.split('.')[0];
   const fileTheme = singleFileName.split('.')[1];
-
+  // ensure it is not an extension
   const validTheme = [fileTheme].filter(item => !ignore_ext.includes(item));
 
-  console.log(validTheme)
-
-
-  make(validTheme[0], dirPath).process(vfile.readSync(`${in_dir}${dirPath ? '/' + dirPath : ''}/${singleFileName}`), function (err, file) {
+  make(validTheme[0], dirPath, fileName).process(vfile.readSync(`${in_dir}${dirPath ? '/' + dirPath : ''}/${singleFileName}`), function (err, file) {
     if (err) { throw err; }
     // Log warnings
     console.warn(report(file));
@@ -132,7 +137,7 @@ const renderStylesheets = (scss_fileNames) => {
     scss_fileNames.forEach((single_scss) => {
       const result = sass.renderSync({ file: `${scss_dir}/${single_scss}` });
       fs.writeFileSync(`${out_dir}/${single_scss.replace('.theme.scss', '.css')}`, result.css);
-      console.log(writing(`wrote file: ${scss_dir}/${single_scss.replace('.scss', '.css')}`));
+      console.log(writing(`wrote file: ${scss_dir}/${single_scss.replace('.theme..scss', '.css')}`));
     });
     resolve();
   })
@@ -148,7 +153,7 @@ const renderSass = () => {
       // remove directory name and processed files from render list
       scss_fileNames = scss_fileNames.filter(item => !ignore.includes(item));
 
-      console.log(reading(`reading ${scss_fileNames.length} scss files`));
+      console.log(reading(`rendering ${scss_fileNames.length} scss files`));
 
       renderStylesheets(scss_fileNames).then(() => {
         resolve();
@@ -156,30 +161,6 @@ const renderSass = () => {
     });
   });
 }
-
-/**
- * 1. Render scss files in the scss_dir directory to css files in the out_dir directory.
- * 2. Render md files in the in_dir directory to html files in the out_dir directory.
- */
-function main() {
-  renderSass().then(() => {
-    console.log(success('scss processing complete ✅'));
-    readFiles(in_dir).then((fileNames) => {
-      // iterate over each file name
-      const dirNames = fileNames.filter(item => ignore_dirs.includes(item));
-      fileNames = fileNames.filter(item => !ignore_dirs.includes(item));
-
-      if (dirNames.length > 0) {
-        subDirRender(dirNames).then(() => {
-          doRender(fileNames);
-        });
-      }
-      doRender(fileNames);
-    });
-  });
-}
-
-main();
 
 const doRender = (fileNames) => {
   fileNames.forEach((singleFileName) => {
@@ -200,3 +181,29 @@ const subDirRender = (dirNames) => {
     resolve();
   });
 }
+
+/**
+ * 1. Render scss files in the scss_dir directory to css files in the out_dir directory.
+ * 2. Render md files in the in_dir directory to html files in the out_dir directory.
+ */
+function main() {
+  renderSass().then(() => {
+    console.log(success('scss rendering complete ✅'));
+    readFiles(in_dir).then((fileNames) => {
+      // iterate over each file name
+      const dirNames = fileNames.filter(item => ignore_dirs.includes(item));
+      fileNames = fileNames.filter(item => !ignore_dirs.includes(item));
+
+      if (dirNames.length > 0) {
+        subDirRender(dirNames).then(() => {
+          doRender(fileNames);
+        });
+      }
+      doRender(fileNames);
+    });
+
+  });
+}
+
+main();
+
