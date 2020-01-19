@@ -7,13 +7,20 @@ var slug = require('remark-slug');
 var toc = require('remark-toc');
 var remark2retext = require('remark-retext');
 var english = require('retext-english');
-var indefiniteArticle = require('retext-indefinite-article');
 var remark2rehype = require('remark-rehype');
 var doc = require('rehype-document');
 var html = require('rehype-stringify');
+var retext = require('retext')
+var emoji = require('retext-emoji');
+var spacing = require('retext-sentence-spacing');
+var spell = require('retext-spell');
+var indefiniteArticle = require('retext-indefinite-article');
+var dictionary = require('dictionary-en-gb');
+var urls = require('retext-syntax-urls');
 var fs = require('fs');
 var sass = require('node-sass');
 const chalk = require('chalk');
+// Chalk styles
 const reading = chalk.bold.yellow;
 const success = chalk.keyword('green');
 
@@ -27,14 +34,21 @@ const finalStylesheetName = process.env.injected_stylesheet || 'index.css';
 const ignore = process.env.ignore_scss.split(',');
 
 var processor = unified()
-  .use(markdown)
+  // enable footnoes
+  .use(markdown, { footnotes: true })
   .use(
     remark2retext,
     unified()
       .use(english)
       .use(indefiniteArticle)
+      .use(spacing)
+      .use(urls)
+      .use(spell, dictionary)
   )
+  // ad id's to heading level elements
   .use(slug)
+  // enable creating a table of linked headings in files that have a
+  // ## Table of Contents
   .use(toc)
   .use(remark2rehype)
   .use(doc, { css: finalStylesheetName })
@@ -111,12 +125,15 @@ function main() {
 
           // set the directory
           file.dirname = out_dir;
+          // convert shortcode emojis
+          var convertedFile = retext()
+            .use(emoji, { convert: 'encode' })
+            .processSync(file)
 
           // set the extension
           file.extname = renderExtension;
-
           // write file
-          vfile.writeSync(file)
+          vfile.writeSync(convertedFile)
         });
       });
     });
