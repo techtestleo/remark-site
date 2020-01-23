@@ -20,12 +20,14 @@ var urls = require('retext-syntax-urls');
 var fs = require('fs');
 var sass = require('node-sass');
 const chalk = require('chalk');
+const ncp = require('ncp');
+var section = require('@agentofuser/rehype-section')
 chalk.level = 3;
 // Chalk styles
 const reading = chalk.yellow;
 const writing = chalk.magenta;
 const success = chalk.green;
-
+var path = require('path');
 // Load .env file
 require('dotenv').config();
 
@@ -35,11 +37,89 @@ const in_dir = process.env.inbound_md_directory || 'content';
 const renderExtension = process.env.render_extension || '.html';
 const scss_dir = process.env.inbound_scss_directory || 'scss';
 const ignore = process.env.ignore_scss.split(',') || ['constants', 'index.css'];
-const ignore_spelling = process.env.ignore_spellcheck.split(',') || [];
-const ignore_dirs = process.env.ignore_directories.split(',') || [];
-const ignore_ext = process.env.ignore_extensions.split(',') || [];
+const ignore_spelling = process.env.ignore_spellcheck.split(',') || ['foo', 'bar'];
 
-const make = (fileTheme, nestedPath, fileName) => {
+/**
+ * Wrapper for find absolute filepaths. Used during file read.
+ * @param {string} fileName 
+ * @param {string} subDir 
+ * @param {boolean} inOut 
+ */
+const getPathToFile = (fileName, subDir, inOut) => {
+  let dirChoice = inOut ? in_dir : out_dir;
+  let pathToReturn = path.resolve(dirChoice, fileName);
+  if (subDir !== undefined) {
+    pathToReturn = path.resolve(dirChoice, subDir, fileName);
+  }
+  return pathToReturn;
+}
+
+/**
+ * Wrapper for finding relative file path. Used for writing css locations.
+ * @param {string} fileName 
+ */
+const getRelativePath = (fileName) => {
+  return path.relative(out_dir, fileName);
+}
+
+/**
+ * Calls ncp() with the in_dir and out_dir, copying only folder.
+ */
+const runNCP = () => {
+  return new Promise((resolve, reject) => {
+    ncp(in_dir, out_dir, {
+      filter: fName => !fName.includes('.')
+    }, (err) => {
+      if (err) {
+        reject(err)
+      }
+      resolve();
+    })
+  })
+}
+
+/**
+ * Render scss files to the out_dir directory.
+ * @param {string[]} scss_fileNames array of filenames to render
+ * @returns {Promise<void>} resolves when complete.
+ */
+const renderStylesheets = (scss_fileNames) => {
+  return new Promise((resolve, reject) => {
+    scss_fileNames.forEach((single_scss) => {
+      const result = sass.renderSync({ file: `${scss_dir}/${single_scss}` });
+      fs.writeFileSync(`${out_dir}/${single_scss.replace('.theme.scss', '.css')}`, result.css);
+      console.log(writing(`wrote file: ${scss_dir}/${single_scss}`));
+    });
+    resolve();
+  })
+}
+
+/**
+ * Read the scss_dir, and render css files to the out_dir with renderStylesheets().
+ */
+const renderSass = () => {
+  return new Promise((resolve, reject) => {
+    fs.readdir(scss_dir, 'utf8', (err, scss_fileNames) => {
+
+      // remove directory name and processed files from render list
+      scss_fileNames = scss_fileNames.filter(item => !ignore.includes(item));
+
+      console.log(reading(`rendering ${scss_fileNames.length} scss files`));
+
+      renderStylesheets(scss_fileNames).then(() => {
+        resolve();
+      })
+    })
+  });
+}
+
+/**
+ * 
+ * @param {string} fileName 
+ */
+const make = (fileName) => {
+  const fileNameArr = fileName.split('.');
+  const validTheme = fileNameArr[fileNameArr.length - 2];
   return processor = unified()
     // enable footnoes
     .use(markdown, { footnotes: true, gfm: true })
@@ -65,145 +145,90 @@ const make = (fileTheme, nestedPath, fileName) => {
     // convert to html syntax tree
     .use(remark2rehype)
     .use(doc, {
-      title: fileName,
-      css: `${nestedPath ? "../" : ''}${fileTheme ? fileTheme : 'index'}.css`,
-      link: {
+      title: fileNameArr[0],
+      css: `${getRelativePath(validTheme)}.css`,
+      style: 'html { visibility: hidden; }',
+      link: [{
         rel: 'shortcut icon',
         href: '/favicon.ico'
-      }
+      }]
     })
     // convert to html
     .use(html)
-}
+    .use(section)
+};
+
 
 /**
- * 
- * @param {string} singleFileName 
- * @param {string} dirPath 
+ * Process a markdown file.
+ * @param {string} fileName 
+ * @param {string} subDir 
  */
-const doProcessing = (singleFileName, dirPath) => {
-  // grab .theme from filename
-  const fileName = singleFileName.split('.')[0];
-  const fileTheme = singleFileName.split('.')[1];
-  // ensure it is not an extension
-  const validTheme = [fileTheme].filter(item => !ignore_ext.includes(item));
-
-  make(validTheme[0], dirPath, fileName).process(vfile.readSync(`${in_dir}${dirPath ? '/' + dirPath : ''}/${singleFileName}`), function (err, file) {
-    if (err) { throw err; }
+const processMdFile = (fileName, subDir) => {
+  make(fileName).process(vfile.readSync(`${getPathToFile(fileName, subDir ? subDir : undefined, true)}`), (err, file) => {
+    if (err) {
+      reject(err);
+    }
     // Log warnings
     console.warn(report(file));
 
-    // set the directory
-    file.dirname = out_dir + `${dirPath ? '/' + dirPath : ''}`;
-
-    // name the file, discarding the .theme 
-    const fileName = singleFileName.split('.')[0];
-    file.basename = fileName;
+    file.basename = fileName.split('.')[0];
     // set the extension
     file.extname = renderExtension;
+
+    file.dirname = `${out_dir}${subDir ? '/' + subDir : ''}`
     // convert shortcode emojis
     var convertedFile = retext()
       .use(emoji, { convert: 'encode' })
       .processSync(file);
-
     // write file
     vfile.writeSync(convertedFile)
-  })
+  });
 }
 
 /**
- * Get all filenames in a directory
- * @param {string} directory directory to look in
- * @returns {Promise<string[]>} array of filenames in the directory
+ * Render /content -> /out, transforming to HTML.
  */
-const readFiles = (directory) => {
-  return new Promise((resolve, reject) => {
-    fs.readdir(directory, (err, fileNames) => {
-      if (err) {
-        reject(err);
+const renderContentDirectory = () => {
+  const results = fs.readdirSync(in_dir);
+
+  results.forEach((item) => {
+    if (item.includes('.md')) {
+
+      processMdFile(item);
+    }
+  });
+  //
+  const remainingDirectories = results.filter((item) => {
+    if (item.split('.').length === 1) {
+      return item;
+    }
+  });
+  //
+  remainingDirectories.forEach((subDir) => {
+    const files = fs.readdirSync(`${in_dir}/${subDir}`);
+    files.forEach((item) => {
+      if (item.includes('.md')) {
+        processMdFile(item, subDir);
       }
-      resolve(fileNames);
     });
   });
-}
 
+};
 /**
- * Render scss files to the out_dir directory.
- * @param {string[]} scss_fileNames array of filenames to render
- * @returns {Promise<void>} resolves when complete.
+ * Main
  */
-const renderStylesheets = (scss_fileNames) => {
+const main = () => {
   return new Promise((resolve, reject) => {
-    scss_fileNames.forEach((single_scss) => {
-      const result = sass.renderSync({ file: `${scss_dir}/${single_scss}` });
-      fs.writeFileSync(`${out_dir}/${single_scss.replace('.theme.scss', '.css')}`, result.css);
-      console.log(writing(`wrote file: ${scss_dir}/${single_scss.replace('.theme..scss', '.css')}`));
-    });
-    resolve();
-  })
-}
+    runNCP().then(() => {
+      console.log(success('ncp complete ✅'));
+      renderSass().then(() => {
+        console.log(success('scss rendering complete ✅'));
+        renderContentDirectory();
 
-/**
- * Read the scss_dir, and render css files to the out_dir with renderStylesheets().
- */
-const renderSass = () => {
-  return new Promise((resolve, reject) => {
-    readFiles(scss_dir).then((scss_fileNames) => {
-
-      // remove directory name and processed files from render list
-      scss_fileNames = scss_fileNames.filter(item => !ignore.includes(item));
-
-      console.log(reading(`rendering ${scss_fileNames.length} scss files`));
-
-      renderStylesheets(scss_fileNames).then(() => {
-        resolve();
-      })
-    });
-  });
-}
-
-const doRender = (fileNames) => {
-  fileNames.forEach((singleFileName) => {
-
-    doProcessing(singleFileName);
-
-  });
-}
-
-const subDirRender = (dirNames) => {
-  return new Promise((resolve, reject) => {
-    dirNames.forEach((dir) => {
-      const files_in_dir = fs.readdirSync(`${in_dir}/${dir}`);
-      files_in_dir.forEach((inner_file) => {
-        doProcessing(inner_file, dir);
       });
     })
-    resolve();
-  });
-}
-
-/**
- * 1. Render scss files in the scss_dir directory to css files in the out_dir directory.
- * 2. Render md files in the in_dir directory to html files in the out_dir directory.
- */
-function main() {
-  renderSass().then(() => {
-    console.log(success('scss rendering complete ✅'));
-    readFiles(in_dir).then((fileNames) => {
-      // iterate over each file name
-      const dirNames = fileNames.filter(item => ignore_dirs.includes(item));
-      fileNames = fileNames.filter(item => !ignore_dirs.includes(item));
-
-      if (dirNames.length > 0) {
-        subDirRender(dirNames).then(() => {
-          doRender(fileNames);
-        });
-      }
-      doRender(fileNames);
-    });
-
   });
 }
 
 main();
-

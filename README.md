@@ -13,14 +13,9 @@ A static html blog powered by unififed & sass.
 6. Start nginx container
 7. Refresh page to see updates
 
+# v2
 
-
-# Elements
-
-Heading
-h1, h2, h3, h4, h5
-
-Body text
-p
-
-ul, li
+1. Read /content directory & subdirectories.
+2. Replicate folder structure in /out directory.
+3. Read .scss files in /scss directory.
+4. Find all scss files in the format {name}.theme.scss
