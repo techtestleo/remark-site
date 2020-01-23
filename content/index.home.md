@@ -1,10 +1,15 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>index</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-</body>
-</html>
+# Home
+
+## Table of Contents
+
+## Stories
+
+[A collection of short stories.](/story/)
+
+## Tech
+
+[Writing about technology.](/tech/)
+
+## Misc
+
+Writing about everything else.

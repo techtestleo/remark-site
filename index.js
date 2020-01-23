@@ -36,13 +36,34 @@ const in_dir = process.env.inbound_md_directory || 'content';
 const renderExtension = process.env.render_extension || '.html';
 const scss_dir = process.env.inbound_scss_directory || 'scss';
 const ignore = process.env.ignore_scss.split(',') || ['constants', 'index.css'];
-const ignore_spelling = process.env.ignore_spellcheck.split(',') || [];
-const ignore_dirs = process.env.ignore_directories.split(',') || [];
-const ignore_ext = process.env.ignore_extensions.split(',') || [];
-const themes = process.env.theme_names || '';
-const searchString = new RegExp(ignore_ext, "g");
+const ignore_spelling = process.env.ignore_spellcheck.split(',') || ['foo', 'bar'];
 
+/**
+ * Wrapper for find absolute filepaths. Used during file read.
+ * @param {string} fileName 
+ * @param {string} subDir 
+ * @param {boolean} inOut 
+ */
+const getPathToFile = (fileName, subDir, inOut) => {
+  let dirChoice = inOut ? in_dir : out_dir;
+  let pathToReturn = path.resolve(dirChoice, fileName);
+  if (subDir !== undefined) {
+    pathToReturn = path.resolve(dirChoice, subDir, fileName);
+  }
+  return pathToReturn;
+}
 
+/**
+ * Wrapper for finding relative file path. Used for writing css locations.
+ * @param {string} fileName 
+ */
+const getRelativePath = (fileName) => {
+  return path.relative(out_dir, fileName);
+}
+
+/**
+ * Calls ncp() with the in_dir and out_dir, copying only folder.
+ */
 const runNCP = () => {
   return new Promise((resolve, reject) => {
     ncp(in_dir, out_dir, {
@@ -66,7 +87,7 @@ const renderStylesheets = (scss_fileNames) => {
     scss_fileNames.forEach((single_scss) => {
       const result = sass.renderSync({ file: `${scss_dir}/${single_scss}` });
       fs.writeFileSync(`${out_dir}/${single_scss.replace('.theme.scss', '.css')}`, result.css);
-      console.log(writing(`wrote file: ${scss_dir}/${single_scss.replace('.theme..scss', '.css')}`));
+      console.log(writing(`wrote file: ${scss_dir}/${single_scss}`));
     });
     resolve();
   })
@@ -124,7 +145,7 @@ const make = (fileName) => {
     .use(remark2rehype)
     .use(doc, {
       title: fileNameArr[0],
-      css: `${getPathToFile(validTheme, undefined, false)}${validTheme ? validTheme : 'index'}.css`,
+      css: `${getRelativePath(validTheme)}.css`,
       link: {
         rel: 'shortcut icon',
         href: '/favicon.ico'
@@ -134,14 +155,12 @@ const make = (fileName) => {
     .use(html)
 };
 
-const getPathToFile = (fileName, subDir, inOut) => {
-  let x = path.resolve(inOut ? in_dir : out_dir, fileName);
-  if (subDir !== undefined) {
-    x = path.resolve(inOut ? in_dir : out_dir, subDir, fileName);
-  }
-  return x;
-}
 
+/**
+ * Process a markdown file.
+ * @param {string} fileName 
+ * @param {string} subDir 
+ */
 const processMdFile = (fileName, subDir) => {
   make(fileName).process(vfile.readSync(`${getPathToFile(fileName, subDir ? subDir : undefined, true)}`), (err, file) => {
     if (err) {
@@ -164,7 +183,10 @@ const processMdFile = (fileName, subDir) => {
   });
 }
 
-const readOutDir = () => {
+/**
+ * Render /content -> /out, transforming to HTML.
+ */
+const renderContentDirectory = () => {
   const results = fs.readdirSync(in_dir);
 
   results.forEach((item) => {
@@ -190,14 +212,16 @@ const readOutDir = () => {
   });
 
 };
-
+/**
+ * Main
+ */
 const main = () => {
   return new Promise((resolve, reject) => {
     runNCP().then(() => {
       console.log(success('ncp complete ✅'));
       renderSass().then(() => {
         console.log(success('scss rendering complete ✅'));
-        readOutDir();
+        renderContentDirectory();
 
       });
     })

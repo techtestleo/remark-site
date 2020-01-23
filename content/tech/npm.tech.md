@@ -1,10 +1,9 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>npm</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-</body>
-</html>
+# Package management
+
+All about modules baby.
+
+| Tables        | Are           | Cool  |
+| ------------- | ------------- | ----- |
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
