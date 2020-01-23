@@ -1,4 +1,7 @@
 # The Golden Ticket
+1. [Lotteries](/misc/glossary.html#Lorem)
+2. Fiction
+3. Short story
 
 ---
 

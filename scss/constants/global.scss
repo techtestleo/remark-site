@@ -23,6 +23,18 @@ h1 {
   color: $core-1;
 }
 
+ol {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  li {
+    padding: 0px 4*$unit;
+  }
+  li::marker {
+   content: ""
+  }
+
+}
 
 ul {
   font-size: $font-size-contents;

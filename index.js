@@ -144,7 +144,6 @@ const make = (fileName) => {
     .use(toc)
     // convert to html syntax tree
     .use(remark2rehype)
-    // .use(section)
     .use(doc, {
       title: fileNameArr[0],
       css: `${getRelativePath(validTheme)}.css`,
@@ -156,6 +155,7 @@ const make = (fileName) => {
     })
     // convert to html
     .use(html)
+    .use(section)
 };
 
 
