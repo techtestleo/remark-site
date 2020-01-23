@@ -88,27 +88,30 @@ const doProcessing = (singleFileName, dirPath) => {
   // ensure it is not an extension
   const validTheme = [fileTheme].filter(item => !ignore_ext.includes(item));
 
-  make(validTheme[0], dirPath, fileName).process(vfile.readSync(`${in_dir}${dirPath ? '/' + dirPath : ''}/${singleFileName}`), function (err, file) {
-    if (err) { throw err; }
-    // Log warnings
-    console.warn(report(file));
+  make(validTheme[0],
+    dirPath,
+    fileName).process(vfile.readSync(`${in_dir}${dirPath ? '/' + dirPath : ''}/${singleFileName}`),
+      function (err, file) {
+        if (err) { throw err; }
+        // Log warnings
+        console.warn(report(file));
 
-    // set the directory
-    file.dirname = out_dir + `${dirPath ? '/' + dirPath : ''}`;
+        // set the directory
+        file.dirname = out_dir + `${dirPath ? '/' + dirPath : ''}`;
 
-    // name the file, discarding the .theme 
-    const fileName = singleFileName.split('.')[0];
-    file.basename = fileName;
-    // set the extension
-    file.extname = renderExtension;
-    // convert shortcode emojis
-    var convertedFile = retext()
-      .use(emoji, { convert: 'encode' })
-      .processSync(file);
+        // name the file, discarding the .theme 
+        const fileName = singleFileName.split('.')[0];
+        file.basename = fileName;
+        // set the extension
+        file.extname = renderExtension;
+        // convert shortcode emojis
+        var convertedFile = retext()
+          .use(emoji, { convert: 'encode' })
+          .processSync(file);
 
-    // write file
-    vfile.writeSync(convertedFile)
-  })
+        // write file
+        vfile.writeSync(convertedFile)
+      })
 }
 
 /**
