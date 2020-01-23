@@ -24,6 +24,7 @@
   "author": "Leo C",
   "license": "ISC",
   "dependencies": {
+    "@agentofuser/rehype-section": "^1.0.5",
     "chalk": "^3.0.0",
     "concat-stream": "^2.0.0",
     "dictionary-en-gb": "^2.1.1",

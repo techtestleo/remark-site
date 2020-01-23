@@ -4,3 +4,43 @@
 @import './text.scss';
 // Slugs
 @import './slugs.scss';
+// Normalise.css
+@import './norm.scss';
+
+html { visibility: visible; } 
+
+hr {
+  width: 100%;
+   margin: unset;
+   color: $core-1;
+}
+
+
+h1 {
+  text-align: center;
+  font-size: $font-size-header;
+  padding: 5*$unit;
+  color: $core-1;
+}
+
+
+ul {
+  font-size: $font-size-contents;
+}
+
+h2 {
+  padding: 5*$unit;
+  margin: unset;
+}
+
+body {
+  color: $core-0;
+  display: flex;
+  flex-direction: column;
+  background-color: $spot-2;
+  font-family: $family;
+  p {
+    font-size: $font-size-body;
+    margin: 5*$unit
+  }
+}

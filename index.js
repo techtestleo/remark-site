@@ -21,6 +21,7 @@ var fs = require('fs');
 var sass = require('node-sass');
 const chalk = require('chalk');
 const ncp = require('ncp');
+var section = require('@agentofuser/rehype-section')
 chalk.level = 3;
 // Chalk styles
 const reading = chalk.yellow;
@@ -143,13 +144,15 @@ const make = (fileName) => {
     .use(toc)
     // convert to html syntax tree
     .use(remark2rehype)
+    // .use(section)
     .use(doc, {
       title: fileNameArr[0],
       css: `${getRelativePath(validTheme)}.css`,
-      link: {
+      style: 'html { visibility: hidden; }',
+      link: [{
         rel: 'shortcut icon',
         href: '/favicon.ico'
-      }
+      }]
     })
     // convert to html
     .use(html)

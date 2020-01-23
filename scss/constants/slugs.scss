@@ -2,6 +2,15 @@
   background-color: $core-5;
 }
 
+.footnotes {
+    li {
+        font-size: $font-size-footer;
+    }
+}
+
+#introduction {
+  background-color: $spot-1
+}
 #part-1 {
   background-color: $skip-1;
 }

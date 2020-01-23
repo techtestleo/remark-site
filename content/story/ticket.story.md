@@ -6,7 +6,7 @@
 
 ## Introduction
 
-A short Lorerm Ipsum story.
+A short Lorerm Ipsum story[^1].
 
 ## Part 1
 
@@ -43,3 +43,5 @@ Adaptogen irony slow-carb chicharrones twee quinoa, poutine kitsch kinfolk activ
 Oh. You need a little dummy text for your mockup? How quaint.
 
 I bet you’re still using Bootstrap too…
+
+[^1]: Decide for yourself and [read more](/misc/glossary.html#Lorem)
