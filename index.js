@@ -8,6 +8,7 @@ var remark2retext = require('remark-retext');
 var english = require('retext-english');
 var remark2rehype = require('remark-rehype');
 var doc = require('rehype-document');
+var format = require('rehype-format')
 var html = require('rehype-stringify');
 var retext = require('retext')
 var emoji = require('retext-emoji');
@@ -139,15 +140,16 @@ const make = (fileName) => {
       // check for spelling errors, ignoring the listed words
       // .use(spell, { dictionary, ignore: ignore_spelling })
     )
-    .use(frontmatter, ['yaml'])
-    // .use(logger)
     // ad id's to heading level elements
     .use(slug)
     // enable creating a table of linked headings in files that have a "Table of Contents" heading
     .use(toc)
     // convert to html syntax tree
     .use(remark2rehype)
-
+    // convert to html
+    .use(html)
+    .use(frontmatter, [{ type: 'custom', fence: '+=+=+' }])
+    .use(format)
     .use(doc, {
       title: fileNameArr[0],
       css: `${getRelativePath(validTheme)}.css`,
@@ -157,12 +159,10 @@ const make = (fileName) => {
         href: '/favicon.ico'
       }]
     })
-    // convert to html
-    .use(html)
 };
 
 function logger() {
-  return console.dir
+
 }
 /**
  * Process a markdown file.
