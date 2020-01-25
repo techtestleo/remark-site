@@ -1,113 +1,27 @@
-// Colour
-// transcribed from: https://mycolor.space/?hex=%23003377&sub=1
-$core: #003377;
-$shade-1: $core;
-$shade-2: #3d56a0;
-$shade-3: #697cca;
-$shade-4: #94a4f6;
-$shade-5: #c0ceff;
+/* Coolors Exported Palette - coolors.co/003377-ebeeff-d5b0ac-e4ffa8-98dfaf */
 
-// Matching
-$core-0: #100f21;
-$core-1: #4a4592;
-$core-2: #7d57ab;
-$core-3: #b06ac1;
-$core-4: #e27ed4;
-$core-5: #ff94e3;
+/* Coolors Exported Palette - coolors.co/003377-ebeeff-d5b0ac-e4ffa8-e1ce7a */
 
-// Spots
-$spot-1: #4a61ac;
-$spot-2: #ebeeff;
-$spot-3: #d1a617;
+/* HSL */
+// $color1: hsla(214%, 100%, 23%, 1);
+// $color2: hsla(231%, 100%, 96%, 1);
+// $color3: hsla(6%, 33%, 75%, 1);
+// $color4: hsla(79%, 100%, 83%, 1);
+// $color5: hsla(49%, 63%, 68%, 1);
 
-// Twisted Spot
-$twist-1: $spot-3;
-$twist-2: #ffefca;
-$twist-3:#857555;
+/* RGB */
+$color1: rgba(0, 51, 119, 1);
+$color2: rgba(235, 238, 255, 1);
+$color3: rgba(213, 176, 172, 1);
+$color4: rgba(228, 255, 168, 1);
+$color5: rgba(225, 206, 122, 1);
 
-// Classy
-$classy-1:#a9aabc;
-$classy-2:#757687;
-$classy-3:#6f0823;
-$classy-4:#a9434f;
+/* RGB */
+$core-bg: $color1;
+$core-fg: $color2;
+$core-high: $color3;
+$core-link: $color4;
+$core-spot: $color5;
 
-// cube
-$cube-1: #7bb6b2;
-$cube-2: #fff7d6;
 
-// switch
-$switch-1: #b5c3ff;
-$switch-2: $spot-3;
-$switch-3: #f1f1e6;
-
-// small switch
-$smallSwitch-1: #dcf6f4;
-$smallSwitch-2: #31918e;
-
-// skip 
-$skip-1: #5decbf; 
-$skip-2: #00b38a; 
-$skip-3: #007d58;
-
-// natural
-$natural-1: #888eba; 
-$natural-2: #f7f8ff; 
-$natural-3: $switch-3;
-
-// squash
-$squash-1: #7f3900; 
-$squash-2: #006174; 
-
-// grey
-$grey-1: #444655;
-$grey-2: $classy-1;
-
-// dotting
-$dot-1: $grey-2;
-$dot-1: $classy-3;
-$dot-3: #bfa5a6;
-
-// skip shade
-$skipShade-1: #0077b3;
-$skipShade-2: #00BACC;
-$skipShade-3: #6DFAcd;
-
-// tri tone
-$tri-1: $core;
-$tri-1: #933003;
-$tri-1: #00623b;
-
-// highlight
-$high-1: #7ba4ff;
-$high-2: $switch-3;
-$high-3: $cube-2;
-
-// neighbour
-$neighbour-1: $cube-1;
-$neighbour-2: #168581;
-$neighbour-3: #324b4a;
-
-// discreet
-$discreet-1: $natural-1;
-$discreet-2: #f8f8ff;
-$discreet-3: $cube-2;
-
-// dust
-$dust-1: $grey-2;
-$dust-2: $classy-2;
-$dust-3: $classy-4;
-
-// collective
-$collective-1: #643997;
-$collective-2: #ab0037;
-
-// friend
-$friend-1: #96a6f9;
-$friend-2: #b38c00;
-$friendThree: #5f4300;
-
-// pin
-$pin-1: $high-1;
-$pin-2: $switch-3;
-$pin-3: $twist-1;
 

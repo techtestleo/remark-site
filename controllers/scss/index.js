@@ -43,7 +43,7 @@ const renderSass = () => {
     // Remove directories and non-scss files from the file to render list.
     scssFilesToRender = scssFilesToRender.filter(item => !ignore.includes(item));
     //
-    log(`✍️ rendering ${scssFilesToRender.length} scss files`, 'r');
+    log(`📚 rendering ${scssFilesToRender.length} scss files`, 'w');
     //
     renderStylesheets(scssFilesToRender).then(() => {
       log(`✅  completed ${scssFilesToRender.length} scss files`, 's');

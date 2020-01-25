@@ -1,43 +1,19 @@
-#table-of-contents {
-  background-color: $core-5;
+sup a::before {
+    content: "";
 }
-
+.footnote-backref::before {
+    content: "";
+}
 .footnotes {
     li {
         font-size: $font-size-footer;
     }
 }
 
-#introduction {
-  background-color: $spot-1
-}
-#part-1 {
-  background-color: $skip-1;
+#le0c {
+    color: $core-spot;
 }
 
-#part-2 {
-    background-color: $skip-2;
-}
-#part-3 {
-    background-color: $skip-3;
-}
-#part-4 {
-    background-color: $natural-1;
-}
-#part-5 {
-    background-color: $natural-2;
-}
-#part-6 {
-    background-color: $high-1;
-
-}
-#part-7 {
-    background-color: $high-2;
-}
-#part-8 {
-    background-color: $cube-1;
-}
-#part-9 {
-    background-color: $cube-2;
-
+#table-of-contents {
+    text-align: center;
 }

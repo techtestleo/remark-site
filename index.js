@@ -1,69 +1,34 @@
-var unified = require('unified');
-var vfile = require('to-vfile');
-var report = require('vfile-reporter');
-var markdown = require('remark-parse');
-var slug = require('remark-slug');
-var toc = require('remark-toc');
-var remark2retext = require('remark-retext');
-var english = require('retext-english');
-var remark2rehype = require('remark-rehype');
-var doc = require('rehype-document');
-var format = require('rehype-format')
-var html = require('rehype-stringify');
-var retext = require('retext')
-var emoji = require('retext-emoji');
-var spacing = require('retext-sentence-spacing');
-var indefiniteArticle = require('retext-indefinite-article');
-var repeated = require('retext-repeated-words')
-var spell = require('retext-spell');
-var dictionary = require('dictionary-en-gb');
-var urls = require('retext-syntax-urls');
-var fs = require('fs');
-var sass = require('node-sass');
-const chalk = require('chalk');
-const ncp = require('ncp');
-var path = require('path');
-chalk.level = 3;
-// Chalk styles
-const reading = chalk.yellow;
-const writing = chalk.magenta;
-const success = chalk.green;
+const unified = require('unified');
+const vfile = require('to-vfile');
+const report = require('vfile-reporter');
+const markdown = require('remark-parse');
+const slug = require('remark-slug');
+const toc = require('remark-toc');
+const remark2retext = require('remark-retext');
+const english = require('retext-english');
+const remark2rehype = require('remark-rehype');
+const doc = require('rehype-document');
+const format = require('rehype-format')
+const html = require('rehype-stringify');
+const retext = require('retext')
+// const emoji = require('retext-emoji');
+const emoji = require('remark-emoji');
+const spacing = require('retext-sentence-spacing');
+const indefiniteArticle = require('retext-indefinite-article');
+const repeated = require('retext-repeated-words')
+const spell = require('retext-spell');
+const dictionary = require('dictionary-en-gb');
+const urls = require('retext-syntax-urls');
+const fs = require('fs');
+const { renderSass, log, copyDirectoryStructure, getRelativeToPath, getAbsolutePathToFile } = require('./controllers/');
 // Load .env file
 require('dotenv').config();
-
-const { renderSass, log, copyDirectoryStructure } = require('./controllers/');
-
 
 // Global process variables
 const out_dir = process.env.build_directory || 'out';
 const in_dir = process.env.inbound_md_directory || 'content';
 const renderExtension = process.env.render_extension || '.html';
-const scss_dir = process.env.inbound_scss_directory || 'scss';
-const ignore = process.env.ignore_scss.split(',') || ['constants', 'index.css'];
 const ignore_spelling = process.env.ignore_spellcheck.split(',') || ['foo', 'bar'];
-
-/**
- * Wrapper for find absolute filepaths. Used during file read.
- * @param {string} fileName 
- * @param {string} subDir 
- * @param {boolean} inOut 
- */
-const getPathToFile = (fileName, subDir, inOut) => {
-  let dirChoice = inOut ? in_dir : out_dir;
-  let pathToReturn = path.resolve(dirChoice, fileName);
-  if (subDir !== undefined) {
-    pathToReturn = path.resolve(dirChoice, subDir, fileName);
-  }
-  return pathToReturn;
-}
-
-/**
- * Wrapper for finding relative file path. Used for writing css locations.
- * @param {string} fileName 
- */
-const getRelativePath = (fileName) => {
-  return path.relative(out_dir, fileName);
-}
 
 /**
  * 
@@ -75,6 +40,7 @@ const make = (fileName) => {
   return processor = unified()
     // enable footnoes
     .use(markdown, { footnotes: true, gfm: true })
+    .use(emoji)
     .use(
       remark2retext,
       unified()
@@ -87,8 +53,9 @@ const make = (fileName) => {
         .use(spacing)
         // allow spellcheck to ignore links
         .use(urls)
-      // check for spelling errors, ignoring the listed words
-      // .use(spell, { dictionary, ignore: ignore_spelling })
+        // check for spelling errors, ignoring the listed words
+        .use(spell, { dictionary, ignore: ignore_spelling })
+
     )
     // ad id's to heading level elements
     .use(slug)
@@ -96,12 +63,13 @@ const make = (fileName) => {
     .use(toc)
     // convert to html syntax tree
     .use(remark2rehype)
+    // .use(logger)
     // convert to html
     .use(html)
     .use(format)
     .use(doc, {
       title: fileNameArr[0],
-      css: `${getRelativePath(validTheme)}.css`,
+      css: `${getRelativeToPath(validTheme)}.css`,
       style: 'html { visibility: hidden; }',
       link: [{
         rel: 'shortcut icon',
@@ -111,33 +79,32 @@ const make = (fileName) => {
 };
 
 function logger() {
-
+  return console.dir;
 }
+
 /**
  * Process a markdown file.
  * @param {string} fileName 
  * @param {string} subDir 
  */
 const processMdFile = (fileName, subDir) => {
-  make(fileName).process(vfile.readSync(`${getPathToFile(fileName, subDir ? subDir : undefined, true)}`), (err, file) => {
-    if (err) {
-      reject(err);
-    }
-    // Log warnings
-    console.warn(report(file));
-
-    file.basename = fileName.split('.')[0];
-    // set the extension
-    file.extname = renderExtension;
-
-    file.dirname = `${out_dir}${subDir ? '/' + subDir : ''}`
-    // convert shortcode emojis
-    var convertedFile = retext()
-      .use(emoji, { convert: 'encode' })
-      .processSync(file);
-    // write file
-    vfile.writeSync(convertedFile)
-  });
+  make(fileName).process(vfile.readSync(`${getAbsolutePathToFile(fileName, subDir ? subDir : undefined, true)}`),
+    (err, file) => {
+      if (err) {
+        reject(err);
+      }
+      // Log warnings
+      console.warn(report(file));
+      //
+      file.basename = fileName.split('.')[0];
+      // set the extension
+      file.extname = renderExtension;
+      // set write directory
+      file.dirname = `${out_dir}${subDir ? '/' + subDir : ''}`
+      // convert shortcode emojis
+      // write file
+      vfile.writeSync(file)
+    });
 }
 
 /**

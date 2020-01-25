@@ -14,7 +14,7 @@ const out_dir = process.env.build_directory;
  * Calls ncp() with the in_dir and out_dir, copying only folder.
  */
 const copyDirectoryStructure = () => {
-  log('✅  reading content folder', 'r');
+  log('📚 reading content folder', 'r');
   return new Promise((resolve, reject) => {
     ncp(in_dir, out_dir, {
       filter: fName => !fName.includes('.')
