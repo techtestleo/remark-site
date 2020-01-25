@@ -26,7 +26,7 @@ const renderStylesheets = (scss_fileNames) => {
       //
       fs.writeFileSync(fileWritePath, result.css);
       //
-      log(`✅ wrote file: ${scss_dir}/${single_scss}`, 's');
+      log(`✅  wrote file: ${scss_dir}/${single_scss}`, 's');
     });
     resolve();
   })
@@ -43,10 +43,10 @@ const renderSass = () => {
     // Remove directories and non-scss files from the file to render list.
     scssFilesToRender = scssFilesToRender.filter(item => !ignore.includes(item));
     //
-    log(`✍️ rendering ${scss_fileNames.length} scss files`, 'r');
+    log(`✍️ rendering ${scssFilesToRender.length} scss files`, 'r');
     //
-    renderStylesheets(scss_fileNames).then(() => {
-      log(`✅ completed ${scss_fileNames.length} scss files`, 's');
+    renderStylesheets(scssFilesToRender).then(() => {
+      log(`✅  completed ${scssFilesToRender.length} scss files`, 's');
       resolve();
     })
   });

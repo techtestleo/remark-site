@@ -22,16 +22,17 @@ var fs = require('fs');
 var sass = require('node-sass');
 const chalk = require('chalk');
 const ncp = require('ncp');
-var frontmatter = require('remark-frontmatter')
+var path = require('path');
 chalk.level = 3;
 // Chalk styles
 const reading = chalk.yellow;
 const writing = chalk.magenta;
 const success = chalk.green;
-var path = require('path');
-const { generateStubs } = require('./controllers/processors/yaml');
 // Load .env file
 require('dotenv').config();
+
+const { renderSass, log, copyDirectoryStructure } = require('./controllers/');
+
 
 // Global process variables
 const out_dir = process.env.build_directory || 'out';
@@ -62,57 +63,6 @@ const getPathToFile = (fileName, subDir, inOut) => {
  */
 const getRelativePath = (fileName) => {
   return path.relative(out_dir, fileName);
-}
-
-/**
- * Calls ncp() with the in_dir and out_dir, copying only folder.
- */
-const runNCP = () => {
-  return new Promise((resolve, reject) => {
-    ncp(in_dir, out_dir, {
-      filter: fName => !fName.includes('.')
-    }, (err) => {
-      if (err) {
-        reject(err)
-      }
-      resolve();
-    })
-  })
-}
-
-/**
- * Render scss files to the out_dir directory.
- * @param {string[]} scss_fileNames array of filenames to render
- * @returns {Promise<void>} resolves when complete.
- */
-const renderStylesheets = (scss_fileNames) => {
-  return new Promise((resolve, reject) => {
-    scss_fileNames.forEach((single_scss) => {
-      const result = sass.renderSync({ file: `${scss_dir}/${single_scss}` });
-      fs.writeFileSync(`${out_dir}/${single_scss.replace('.theme.scss', '.css')}`, result.css);
-      console.log(writing(`wrote file: ${scss_dir}/${single_scss}`));
-    });
-    resolve();
-  })
-}
-
-/**
- * Read the scss_dir, and render css files to the out_dir with renderStylesheets().
- */
-const renderSass = () => {
-  return new Promise((resolve, reject) => {
-    fs.readdir(scss_dir, 'utf8', (err, scss_fileNames) => {
-
-      // remove directory name and processed files from render list
-      scss_fileNames = scss_fileNames.filter(item => !ignore.includes(item));
-
-      console.log(reading(`rendering ${scss_fileNames.length} scss files`));
-
-      renderStylesheets(scss_fileNames).then(() => {
-        resolve();
-      })
-    })
-  });
 }
 
 /**
@@ -148,7 +98,6 @@ const make = (fileName) => {
     .use(remark2rehype)
     // convert to html
     .use(html)
-    .use(frontmatter, [{ type: 'custom', fence: '+=+=+' }])
     .use(format)
     .use(doc, {
       title: fileNameArr[0],
@@ -225,10 +174,10 @@ const renderContentDirectory = () => {
  */
 const main = () => {
   return new Promise((resolve, reject) => {
-    runNCP().then(() => {
-      console.log(success('ncp complete ✅'));
+    copyDirectoryStructure().then(() => {
+      log('✅  ncp complete', 's');
       renderSass().then(() => {
-        console.log(success('scss rendering complete ✅'));
+        log('✅  scss rendering complete', 's');
         renderContentDirectory();
 
       });

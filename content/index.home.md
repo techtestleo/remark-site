@@ -1,15 +1,5 @@
-# Home
-
-## Table of Contents
-
-## Stories
-
-[A collection of short stories.](/story/)
-
-## Tech
-
-[Writing about technology.](/tech/)
-
-## Misc
-
-Writing about everything else.
+# le0c
+1. [github](https://github.com/techtestleo/remark-site)
+2. [linkedin](https://www.linkedin.com/in/leo-coleman-738a6913b/)
+3. [cv](https://drive.google.com/open?id=abc123)
+---
