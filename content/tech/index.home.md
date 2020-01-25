@@ -2,12 +2,6 @@
 
 ## Table of Contents
 
-## Tech 1
+## [unified](/tech/unified.html#unified)
 
-## Tech 2
-
-## Tech 3
-
-## Tech 4
-
-## Tech 5
+## [npm](/tech/npm.html#npm)

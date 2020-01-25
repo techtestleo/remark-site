@@ -170,26 +170,24 @@ function logger() {
  * @param {string} subDir 
  */
 const processMdFile = (fileName, subDir) => {
-  generateStubs(fileName, subDir).then(() => {
-    make(fileName).process(vfile.readSync(`${getPathToFile(fileName, subDir ? subDir : undefined, true)}`), (err, file) => {
-      if (err) {
-        reject(err);
-      }
-      // Log warnings
-      console.warn(report(file));
+  make(fileName).process(vfile.readSync(`${getPathToFile(fileName, subDir ? subDir : undefined, true)}`), (err, file) => {
+    if (err) {
+      reject(err);
+    }
+    // Log warnings
+    console.warn(report(file));
 
-      file.basename = fileName.split('.')[0];
-      // set the extension
-      file.extname = renderExtension;
+    file.basename = fileName.split('.')[0];
+    // set the extension
+    file.extname = renderExtension;
 
-      file.dirname = `${out_dir}${subDir ? '/' + subDir : ''}`
-      // convert shortcode emojis
-      var convertedFile = retext()
-        .use(emoji, { convert: 'encode' })
-        .processSync(file);
-      // write file
-      vfile.writeSync(convertedFile)
-    });
+    file.dirname = `${out_dir}${subDir ? '/' + subDir : ''}`
+    // convert shortcode emojis
+    var convertedFile = retext()
+      .use(emoji, { convert: 'encode' })
+      .processSync(file);
+    // write file
+    vfile.writeSync(convertedFile)
   });
 }
 
