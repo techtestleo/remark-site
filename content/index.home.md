@@ -19,7 +19,7 @@ Musings on technology.
 Short stories.
 
 ## disclaimer
-> ✏️ _All opinions are entirely my own.[^1]_
+> ✎ _All opinions are entirely my own.[^1]_
 
 ---
 [^1]: **(c) 2020 Leo C.**
