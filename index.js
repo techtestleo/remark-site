@@ -12,16 +12,16 @@ var html = require('rehype-stringify');
 var retext = require('retext')
 var emoji = require('retext-emoji');
 var spacing = require('retext-sentence-spacing');
-var spell = require('retext-spell');
 var indefiniteArticle = require('retext-indefinite-article');
 var repeated = require('retext-repeated-words')
+var spell = require('retext-spell');
 var dictionary = require('dictionary-en-gb');
 var urls = require('retext-syntax-urls');
 var fs = require('fs');
 var sass = require('node-sass');
 const chalk = require('chalk');
 const ncp = require('ncp');
-var section = require('@agentofuser/rehype-section')
+var frontmatter = require('remark-frontmatter')
 chalk.level = 3;
 // Chalk styles
 const reading = chalk.yellow;
@@ -138,12 +138,14 @@ const make = (fileName) => {
       // check for spelling errors, ignoring the listed words
       // .use(spell, { dictionary, ignore: ignore_spelling })
     )
+    .use(frontmatter, ['toml'])
     // ad id's to heading level elements
     .use(slug)
     // enable creating a table of linked headings in files that have a "Table of Contents" heading
     .use(toc)
     // convert to html syntax tree
     .use(remark2rehype)
+
     .use(doc, {
       title: fileNameArr[0],
       css: `${getRelativePath(validTheme)}.css`,
@@ -155,7 +157,6 @@ const make = (fileName) => {
     })
     // convert to html
     .use(html)
-    .use(section)
 };
 
 
