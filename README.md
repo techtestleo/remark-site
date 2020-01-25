@@ -15,7 +15,36 @@ A static html blog powered by unififed & sass.
 
 # notes for v2 approach
 
-1. Read /content directory & subdirectories.
-2. Replicate folder structure in /out directory.
-3. Read .scss files in /scss directory.
-4. Find all scss files in the format {name}.theme.scss
+## Goals
+
+## Input
+
+- /content directory with .MD files
+- JSON / static ref to category & page themes
+- website metadata
+
+YAML style header for frontmatter:
+
+```yaml
+---
+title: Foobar goes to Hollywood
+category: story
+date: "2016-08-05 09:44:16"
+tags:
+  - america
+  - music
+  - technology
+---
+```
+
+## Output
+
+Static HTML blog:
+
+/index.html
+  --/{category-a}/index.html
+    --/{title}
+    --/{title}
+  --/{category-b}//index.html
+    --/{title}
+    --/{title}

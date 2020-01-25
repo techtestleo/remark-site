@@ -1,6 +1,7 @@
-+++
-title: "Fooooo bar"
-+++
+---
+title: "Ticket"
+date: "2020-01-25"
+---
 
 # The Golden Ticket
 1. [Lotteries](/misc/glossary.html#Lorem)

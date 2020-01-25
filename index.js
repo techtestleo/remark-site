@@ -28,6 +28,7 @@ const reading = chalk.yellow;
 const writing = chalk.magenta;
 const success = chalk.green;
 var path = require('path');
+const { generateStubs } = require('./controllers/processors/yaml');
 // Load .env file
 require('dotenv').config();
 
@@ -138,7 +139,8 @@ const make = (fileName) => {
       // check for spelling errors, ignoring the listed words
       // .use(spell, { dictionary, ignore: ignore_spelling })
     )
-    .use(frontmatter, ['toml'])
+    .use(frontmatter, ['yaml'])
+    // .use(logger)
     // ad id's to heading level elements
     .use(slug)
     // enable creating a table of linked headings in files that have a "Table of Contents" heading
@@ -159,31 +161,35 @@ const make = (fileName) => {
     .use(html)
 };
 
-
+function logger() {
+  return console.dir
+}
 /**
  * Process a markdown file.
  * @param {string} fileName 
  * @param {string} subDir 
  */
 const processMdFile = (fileName, subDir) => {
-  make(fileName).process(vfile.readSync(`${getPathToFile(fileName, subDir ? subDir : undefined, true)}`), (err, file) => {
-    if (err) {
-      reject(err);
-    }
-    // Log warnings
-    console.warn(report(file));
+  generateStubs(fileName, subDir).then(() => {
+    make(fileName).process(vfile.readSync(`${getPathToFile(fileName, subDir ? subDir : undefined, true)}`), (err, file) => {
+      if (err) {
+        reject(err);
+      }
+      // Log warnings
+      console.warn(report(file));
 
-    file.basename = fileName.split('.')[0];
-    // set the extension
-    file.extname = renderExtension;
+      file.basename = fileName.split('.')[0];
+      // set the extension
+      file.extname = renderExtension;
 
-    file.dirname = `${out_dir}${subDir ? '/' + subDir : ''}`
-    // convert shortcode emojis
-    var convertedFile = retext()
-      .use(emoji, { convert: 'encode' })
-      .processSync(file);
-    // write file
-    vfile.writeSync(convertedFile)
+      file.dirname = `${out_dir}${subDir ? '/' + subDir : ''}`
+      // convert shortcode emojis
+      var convertedFile = retext()
+        .use(emoji, { convert: 'encode' })
+        .processSync(file);
+      // write file
+      vfile.writeSync(convertedFile)
+    });
   });
 }
 
