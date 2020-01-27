@@ -62,7 +62,12 @@ const makeProcessor = (fName) => {
       }]
     })
     // tidy html
-    .use(format);
+    .use(format)
+    .use(logger)
+}
+
+function logger() {
+  log('✅  file render complete!', 's');
 }
 
 module.exports = {
