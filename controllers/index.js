@@ -1,8 +1,8 @@
-const { log } = require('./log/')
-const { copyDirectoryStructure } = require('./ncp/')
-const { renderSass } = require('./scss/')
-const { getRelativeToPath, getAbsolutePathToFile, makeFileName, getName, getTheme, splitFileName, getDocCss } = require('./path/')
+
+const { renderSass } = require('./scss/');
+const { getName, getTheme, getDocCss } = require('./path/');
+const { makeProcessor } = require('./processor/');
 
 module.exports = {
-  log, copyDirectoryStructure, renderSass, getRelativeToPath, getAbsolutePathToFile, makeFileName, getName, getTheme, splitFileName, getDocCss
+  renderSass, getName, getTheme, getDocCss, makeProcessor
 }
