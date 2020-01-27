@@ -47,8 +47,8 @@ const processor = unified()
       .use(spacing)
       // allow spellcheck to ignore links
       .use(urls)
-      // check for spelling errors, ignoring the listed words
-      .use(spell, { dictionary, ignore: ignore_spelling })
+    // check for spelling errors, ignoring the listed words
+    // .use(spell, { dictionary, ignore: ignore_spelling })
 
   )
   // ad id's to heading level elements
@@ -70,13 +70,21 @@ const runNCP = () => {
   return new Promise((resolve, reject) => {
 
     ncp(in_dir, out_dir, {
-      transform: function (read, write) {
+      transform: function (read, write, file) {
+        filePaths.push(file.name);
         read
           .pipe(stream(processor))
           .pipe(write)
       }
     }, function (err) {
-
+      resolve();
     })
   })
 }
+
+runNCP().then(() => {
+  filePaths.forEach((fName) => {
+    console.log(fName);
+  })
+  console.log`done`;
+})

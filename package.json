@@ -7,13 +7,11 @@
     "update": {
       "patterns": [
         "content",
-        "scss",
-        "*"
+        "scss"
       ],
       "extensions": [
         "md",
-        "scss",
-        "js"
+        "scss"
       ]
     }
   },
