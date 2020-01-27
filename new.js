@@ -1,63 +1,51 @@
-
-
-
-require('dotenv').config();
 const ncp = require('ncp');
 const unified = require('unified');
-var markdown = require('remark-parse')
-var remark2rehype = require('remark-rehype')
-var html = require('rehype-stringify')
-var doc = require('rehype-document')
-var format = require('rehype-format')
-var rehype = require('rehype')
-var section = require('rehype-section')
-var slug = require('rehype-slug');
-var toc = require('remark-toc');
+const vfile = require('to-vfile');
+const report = require('vfile-reporter');
+const markdown = require('remark-parse');
+const slug = require('remark-slug');
+const toc = require('remark-toc');
+const remark2retext = require('remark-retext');
+const english = require('retext-english');
+const remark2rehype = require('remark-rehype');
+const doc = require('rehype-document');
+const format = require('rehype-format')
+const html = require('rehype-stringify');
+const retext = require('retext')
+// const emoji = require('retext-emoji');
+const emoji = require('remark-emoji');
+const spacing = require('retext-sentence-spacing');
+const indefiniteArticle = require('retext-indefinite-article');
+const repeated = require('retext-repeated-words')
+const spell = require('retext-spell');
+const dictionary = require('dictionary-en-gb');
+const urls = require('retext-syntax-urls');
+const fs = require('fs');
+const stream = require('unified-stream');
+const { renderSass, log, copyDirectoryStructure, getRelativeToPath, getAbsolutePathToFile } = require('./controllers');
+// Load .env file
+require('dotenv').config();
+
+// Global process variables
+const out_dir = process.env.build_directory || 'out';
+const in_dir = process.env.inbound_md_directory || 'content';
 
 
-let processor = unified()
-
-  .use(markdown, { footnotes: true, gfm: true })
-  .use(
-    remark2retext,
-    unified()
-      .use(english)
-      // check for repeated words words
-      .use(repeated)
-      // A -> An and vice versa
-      .use(indefiniteArticle)
-      // check for spacing      errors
-      .use(spacing)
-      // allow spellcheck to ignore links
-      .use(urls)
-    // check for spelling errors, ignoring the listed words
-    // .use(spell, { dictionary, ignore: ignore_spelling })
-  )
-  // In: Remark
-  // remark plugin to generate a Table of Contents.
-  // Out: Remark
-  // Phase end-3
-  .use(toc)
-  // In: hast syntax tree
-  // rehype plugin to wrap a document around a fragment.
-  // Out: HTML
-  // Phase end-3
-  .use(doc)
-  // In: HTML
-  // Applies linting to html.
-  // Out: HTML
-  // Phase: end-3
-  .use(format)
-  // In: HTML
-  // Stringifies hast syntax trees to HTML. 
-  // Out: HTML
-  // Phase: end-2
-  .use(html)
-  // In: HTML
-  // Mutate nested segments
-  // Out: HTML wrapped in <section> tags
-  // Phase: end-1
-  .use(section)
 
 
-const processor = unified()
+
+
+const filePaths = [];
+
+const runNCP = () => {
+  return new Promise((resolve, reject) => {
+
+    ncp(in_dir, out_dir, {
+      transform: function (read, write) {
+
+      }
+    }, function (err) {
+
+    })
+  })
+}
