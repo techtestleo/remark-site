@@ -15,7 +15,7 @@ const repeated = require('retext-repeated-words')
 const spell = require('retext-spell');
 const dictionary = require('dictionary-en-gb');
 const urls = require('retext-syntax-urls');
-const { getDocCss, getName } = require('./controllers');
+const { getDocCss, getName } = require('../path/');
 require('dotenv').config();
 // Global process variables
 const ignore_spelling = process.env.ignore_spellcheck.split(',') || ['foo', 'bar']
