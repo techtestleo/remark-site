@@ -20,7 +20,7 @@ const spell = require('retext-spell');
 const dictionary = require('dictionary-en-gb');
 const urls = require('retext-syntax-urls');
 const fs = require('fs');
-const { renderSass, log, copyDirectoryStructure, getRelativeToPath, getAbsolutePathToFile } = require('./controllers/');
+const { renderSass, log, copyDirectoryStructure, getRelativeToPath, getAbsolutePathToFile } = require('./controllers');
 // Load .env file
 require('dotenv').config();
 

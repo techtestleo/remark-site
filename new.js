@@ -31,7 +31,36 @@ const out_dir = process.env.build_directory || 'out';
 const in_dir = process.env.inbound_md_directory || 'content';
 
 
+const processor = unified()
+  // enable footnoes
+  .use(markdown, { footnotes: true, gfm: true })
+  .use(emoji)
+  .use(
+    remark2retext,
+    unified()
+      .use(english)
+      // check for repeated words words
+      .use(repeated)
+      // A -> An and vice versa
+      .use(indefiniteArticle)
+      // check for spacing      errors
+      .use(spacing)
+      // allow spellcheck to ignore links
+      .use(urls)
+      // check for spelling errors, ignoring the listed words
+      .use(spell, { dictionary, ignore: ignore_spelling })
 
+  )
+  // ad id's to heading level elements
+  .use(slug)
+  // enable creating a table of linked headings in files that have a "Table of Contents" heading
+  .use(toc)
+  // convert to html syntax tree
+  .use(remark2rehype)
+  // .use(logger)
+  // convert to html
+  .use(html)
+  .use(format)
 
 
 
@@ -42,7 +71,9 @@ const runNCP = () => {
 
     ncp(in_dir, out_dir, {
       transform: function (read, write) {
-
+        read
+          .pipe(stream(processor))
+          .pipe(write)
       }
     }, function (err) {
 
