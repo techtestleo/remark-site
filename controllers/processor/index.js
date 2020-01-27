@@ -15,12 +15,14 @@ const repeated = require('retext-repeated-words')
 const spell = require('retext-spell');
 const dictionary = require('dictionary-en-gb');
 const urls = require('retext-syntax-urls');
-const { getDocCss, getName } = require('../path/');
+const { getDocCss, getName, splitFileName } = require('../path/');
+const { log } = require('../log/');
 require('dotenv').config();
 // Global process variables
 const ignore_spelling = process.env.ignore_spellcheck.split(',') || ['foo', 'bar']
 
 const makeProcessor = (fName) => {
+  log('📚 rendering ' + splitFileName(fName)[splitFileName(fName).length - 1], 'w');
   return processor = unified()
     // enable footnoes
     .use(markdown, { footnotes: true, gfm: true })

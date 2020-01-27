@@ -2,7 +2,9 @@
  * -------------- Path utilities --------------
  * Uses node path to return absolute and relative filepaths.
  */
+const fs = require('fs');
 const path = require('path');
+const { log } = require('../log/')
 require('dotenv').config();
 const out_dir = process.env.build_directory || 'out';
 const in_dir = process.env.inbound_md_directory || 'content';
@@ -55,8 +57,16 @@ const makeFileName = (fName) => {
       splitFileName(fName)[x.length - 1].split('.')[0]) + '.html';
 }
 
+const renameFiles = (filePaths) => {
+  filePaths.forEach((fName) => {
+    fs.renameSync(
+      fName.replace(in_dir, out_dir),
+      makeFileName(fName))
+  })
+  log(`✅  finished renaming!`, 's');
+}
 
 module.exports = {
   getAbsolutePathToFile, getRelativeToPath, splitFileName, getName, getTheme, makeFileName,
-  getDocCss
+  getDocCss, renameFiles
 }
