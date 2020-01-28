@@ -1,3 +1,7 @@
+/**
+ * -------------- Processor --------------
+ * Unified processer to use with stream.
+ */
 const unified = require('unified');
 const markdown = require('remark-parse');
 const slug = require('remark-slug');

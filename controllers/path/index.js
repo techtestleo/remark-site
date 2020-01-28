@@ -1,6 +1,6 @@
 /**
  * -------------- Path utilities --------------
- * Uses node path to return absolute and relative filepaths.
+ * File path & name utilities.
  */
 const fs = require('fs');
 const path = require('path');
@@ -34,7 +34,11 @@ const getRelativeToPath = (fileName) => {
 const splitFileName = (fName) => { return fName.split('/'); }
 
 const getDocCss = (fName) => {
-  return `${getRelativeToPath(getTheme(fName))}.css`
+  const fileNameArr = fName.split('.');
+  const validTheme = fileNameArr[fileNameArr.length - 2];
+  let refPath = path.relative(fName, `${fName.split(in_dir)[0]}/content/`);
+  console.log(refPath);
+  return `${refPath.replace('..', '.')}/${validTheme}.css`
 }
 
 const getName = (fName) => {
