@@ -9,28 +9,6 @@ require('dotenv').config();
 const out_dir = process.env.build_directory || 'out';
 const in_dir = process.env.inbound_md_directory || 'content';
 const theme_names = process.env.theme_names.split(',') || ['tech', 'story', 'root', 'home'];
-/**
- * Wrapper for find absolute filepaths. Used during file read.
- * @param {string} fileName 
- * @param {string} subDir 
- * @param {boolean} inOut 
- */
-const getAbsolutePathToFile = (fileName, subDir, inOut) => {
-  let dirChoice = inOut ? in_dir : out_dir;
-  let pathToReturn = path.resolve(dirChoice, fileName);
-  if (subDir !== undefined) {
-    pathToReturn = path.resolve(dirChoice, subDir, fileName);
-  }
-  return pathToReturn;
-}
-
-/**
- * Wrapper for finding relative file path. Used for writing css locations.
- * @param {string} fileName 
- */
-const getRelativeToPath = (fileName) => {
-  return path.relative(out_dir, fileName);
-}
 
 const splitFileName = (fName) => { return fName.split('/'); }
 
@@ -44,18 +22,21 @@ const captureThemes = (fName) => {
 const getDocCss = (fName) => {
   let themes = captureThemes(fName);
   let refPath = path.relative(fName, `${fName.split(in_dir)[0]}/${in_dir}/`);
-  let x = [];
+  let final = [];
   themes.forEach((theme) => {
-    x.push({
+    final.push({
       rel: 'stylesheet',
       href: `${refPath.replace('..', '.')}/${theme}.css`
     });
   })
-  x.push({
+  // add favicon
+  final.push({
     rel: 'shortcut icon',
     href: '/favicon.ico'
   })
-  return x;
+  // add other links
+  //
+  return final;
 }
 
 const getName = (fName) => {

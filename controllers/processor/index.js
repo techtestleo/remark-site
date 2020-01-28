@@ -25,6 +25,9 @@ require('dotenv').config();
 // Global process variables
 const ignore_spelling = process.env.ignore_spellcheck.split(',') || ['foo', 'bar']
 
+// TODO: Frontmatter.
+
+
 const makeProcessor = (fName) => {
   log('📚 rendering ' + splitFileName(fName)[splitFileName(fName).length - 1], 'w');
   return processor = unified()
