@@ -83,6 +83,5 @@ const renameFiles = (filePaths) => {
 }
 
 module.exports = {
-  getAbsolutePathToFile, getRelativeToPath, splitFileName, getName, makeFileName,
-  getDocCss, renameFiles
+  renameFiles, getDocCss, getName, splitFileName
 }
