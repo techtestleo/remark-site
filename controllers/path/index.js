@@ -63,11 +63,6 @@ const getName = (fName) => {
   let y = splitFileName(fName)[x.length - 1];
   return y.split('.')[0];
 }
-const getTheme = (fName) => {
-  let x = splitFileName(fName)
-  let y = splitFileName(fName)[x.length - 1];
-  return y.split('.')[1];
-}
 
 const makeFileName = (fName) => {
   let x = splitFileName(fName);
@@ -88,6 +83,6 @@ const renameFiles = (filePaths) => {
 }
 
 module.exports = {
-  getAbsolutePathToFile, getRelativeToPath, splitFileName, getName, getTheme, makeFileName,
+  getAbsolutePathToFile, getRelativeToPath, splitFileName, getName, makeFileName,
   getDocCss, renameFiles
 }
