@@ -8,6 +8,7 @@ const { log } = require('../log/')
 require('dotenv').config();
 const out_dir = process.env.build_directory || 'out';
 const in_dir = process.env.inbound_md_directory || 'content';
+const theme_names = process.env.theme_names.split(',') || ['tech', 'story', 'root', 'home'];
 /**
  * Wrapper for find absolute filepaths. Used during file read.
  * @param {string} fileName 
@@ -33,12 +34,28 @@ const getRelativeToPath = (fileName) => {
 
 const splitFileName = (fName) => { return fName.split('/'); }
 
+const captureThemes = (fName) => {
+  let possibleThemes = splitFileName(fName);
+  let x = possibleThemes[possibleThemes.length - 1]
+  let y = x.split('.');
+  return y.filter(theme => theme_names.includes(theme));
+}
+
 const getDocCss = (fName) => {
-  const fileNameArr = fName.split('.');
-  const validTheme = fileNameArr[fileNameArr.length - 2];
-  let refPath = path.relative(fName, `${fName.split(in_dir)[0]}/content/`);
-  console.log(refPath);
-  return `${refPath.replace('..', '.')}/${validTheme}.css`
+  let themes = captureThemes(fName);
+  let refPath = path.relative(fName, `${fName.split(in_dir)[0]}/${in_dir}/`);
+  let x = [];
+  themes.forEach((theme) => {
+    x.push({
+      rel: 'stylesheet',
+      href: `${refPath.replace('..', '.')}/${theme}.css`
+    });
+  })
+  x.push({
+    rel: 'shortcut icon',
+    href: '/favicon.ico'
+  })
+  return x;
 }
 
 const getName = (fName) => {

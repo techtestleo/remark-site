@@ -58,12 +58,8 @@ const makeProcessor = (fName) => {
     // inject title stylesheet, favicon & style hack to prevent FOUT
     .use(doc, {
       title: getName(fName),
-      css: getDocCss(fName),
       style: 'html { visibility: hidden; }',
-      link: [{
-        rel: 'shortcut icon',
-        href: '/favicon.ico'
-      }]
+      link: getDocCss(fName)
     })
     // tidy html
     .use(format)
