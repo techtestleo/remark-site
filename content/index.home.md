@@ -18,6 +18,10 @@ Musings on technology.
 
 Short stories.
 
+## [games](/games)
+
+Browser games.
+
 ## disclaimer
 > ✎ _All opinions are entirely my own.[^1]_
 

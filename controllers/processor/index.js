@@ -19,15 +19,15 @@ const repeated = require('retext-repeated-words')
 const spell = require('retext-spell');
 const dictionary = require('dictionary-en-gb');
 const urls = require('retext-syntax-urls');
-const { getDocCss, getName, splitFileName } = require('../path/');
+const scripts = require('rehype-javascript-to-bottom');
+const minify = require('rehype-minify-javascript-script');
+const { getDocCss, getName, splitFileName, scriptInjector } = require('../path/');
 const { log } = require('../log/');
 require('dotenv').config();
 // Global process variables
 const ignore_spelling = process.env.ignore_spellcheck.split(',') || ['foo', 'bar']
 
 // TODO: Frontmatter.
-
-
 const makeProcessor = (fName) => {
   log('📚 rendering ' + splitFileName(fName)[splitFileName(fName).length - 1], 'w');
   return processor = unified()
@@ -61,11 +61,16 @@ const makeProcessor = (fName) => {
     // inject title stylesheet, favicon & style hack to prevent FOUT
     .use(doc, {
       title: getName(fName),
-      style: 'html { visibility: hidden; }',
-      link: getDocCss(fName)
+      style: 'html { visibility: visible; }',
+      link: getDocCss(fName),
+      script: scriptInjector(fName)
     })
     // tidy html
     .use(format)
+    // push <script> tags to bottom of html
+    .use(scripts)
+    // minify scripts
+    .use(minify)
     .use(logger)
 }
 

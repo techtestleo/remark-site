@@ -4,7 +4,8 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { log } = require('../log/')
+const { log } = require('../log/');
+var vfile = require('to-vfile');
 require('dotenv').config();
 const out_dir = process.env.build_directory || 'out';
 const in_dir = process.env.inbound_md_directory || 'content';
@@ -63,6 +64,22 @@ const renameFiles = (filePaths) => {
   log(`✅  finished renaming!`, 's');
 }
 
+/**
+ * Checks if we should inject javascript.
+ * @param {string} fName 
+ */
+const scriptInjector = (fName) => {
+  if (!fName.includes('type-fighter/index.game.md')) {
+
+    return []
+  }
+  return [
+    vfile.readSync('./controllers/typefighter/util/index.js', 'utf8').contents,
+    vfile.readSync('./controllers/typefighter/index.js', 'utf8').contents
+  ]
+}
+
+
 module.exports = {
-  renameFiles, getDocCss, getName, splitFileName
+  renameFiles, getDocCss, getName, splitFileName, scriptInjector
 }

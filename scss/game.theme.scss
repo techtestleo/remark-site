@@ -1,0 +1,12 @@
+@import './constants/global.scss';
+
+#container {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  background-color: $core-bg;
+  font-size: $font-size-header;
+}
+#current-word {
+  color: $core-high !important;
+}
