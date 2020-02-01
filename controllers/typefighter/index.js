@@ -2,12 +2,6 @@
  * Type fighter mini game
  */
 
-const arrowMapping = {
-  ArrowRight: "👉",
-  ArrowLeft: "👈",
-  ArrowUp: "👆",
-  ArrowDown: "👇",
-}
 
 let state = {
   wordLength: 3,
@@ -19,7 +13,28 @@ let state = {
   currentLine: createLine(3, 3),
   keyTarget: ""
 }
+
 state.keyTarget = state.currentLine[0][0];
+
+const container = document.createElement('div');
+document.body.appendChild(container);
+container.id = 'container'
+
+const createContainers = () => {
+  state.currentLine.forEach((word, i) => {
+    let wordDiv = document.createElement('div');
+    document.getElementById('container').appendChild(wordDiv);
+    wordDiv.id = `word-${i}`;
+    wordDiv.innerHTML = word.join('');
+  })
+
+
+}
+
+function updateDisplay() {
+
+}
+
 /**
  * Map KeyboardEvent values to state.
  * @param {KeyboardEvent} ev 
