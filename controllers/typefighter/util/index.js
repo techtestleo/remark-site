@@ -1,5 +1,3 @@
-
-// const letters = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'];
 const allKeys = 'qwertyuiopasdfghjklzxcvbnm'
 const letters = allKeys.split('');
 
@@ -25,7 +23,6 @@ const createWord = (wordLength) => {
   }
   return output;
 }
-
 
 /**
  * Returns an array of random words.
