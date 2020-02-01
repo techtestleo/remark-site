@@ -1,12 +1,85 @@
 @import './constants/global.scss';
 
+body #container {
+  padding-left: 50%;
+}
+
+#outer-container {
+  display: flex;
+  flex-direction: row;
+}
+
 #container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   text-align: center;
   background-color: $core-bg;
   font-size: $font-size-header;
+  justify-content: space-between;
+  width: 50%;
+  overflow-x: hidden;
+    div {
+      margin: 8px 24px 8px 0px;
+    }
 }
-#current-word {
+#word-0 {
   color: $core-high !important;
+  margin-left: -12px !important;
+}
+#word-0::first-letter {
+    color: #189f62;
+  }
+#points-container {
+  width: 50%;
+  color: $core-bgd;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background-color: $core-high;
+  font-size: $font-size-header;
+  box-sizing: border-box;
+  padding: 8px;
+}
+#upgrades-container {
+  width: 50%;
+  color: $core-bgd;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background-color: $core-link;
+  font-size: $font-size-body;
+  box-sizing: border-box;
+  padding: 8px;
+}
+#lineComplete-ref {
+  opacity: 0;
+  transition: opacity .25s ease-out;
+}
+#lineComplete-ref-show {
+  opacity: 1;
+  transition: opacity .25s ease-in;
+}
+#wordComplete-ref {
+  opacity: 0;
+  transition: opacity .25s ease-out;
+}
+#wordComplete-ref-show {
+  opacity: 1;
+  transition: opacity .25s ease-in;
+}
+#sectionComplete-ref {
+  opacity: 0;
+  transition: opacity .25s ease-out;
+}
+#sectionComplete-ref-show {
+  opacity: 1;
+  transition: opacity .25s ease-in;
+}
+#pageComplete-ref {
+  opacity: 0;
+  transition: opacity .25s ease-out;
+}
+#pageComplete-ref-show {
+  opacity: 1;
+  transition: opacity .25s ease-in;
 }
