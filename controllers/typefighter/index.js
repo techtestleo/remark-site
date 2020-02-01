@@ -14,8 +14,8 @@ class MemoryState {
   downEvent = null;
   lastPressWasHit = false;
   wordRefs = [];
-  baseWordLength = 2;
-  baseLineLength = 2;
+  baseWordLength = 3;
+  baseLineLength = 3;
   pointRef = {}
   view = {
     // Array of words (words = array of letters)
@@ -131,11 +131,13 @@ class MemoryState {
       if (this.playerStats.lines % this.rates.sectionRate === 0) {
         this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.sections)
         this.playerStats.sections++
+        this.baseWordLength++;
         document.getElementById('sectionComplete-ref').id = 'sectionComplete-ref-show'
         // increment page
         if (this.playerStats.sections % this.rates.pageRate === 0) {
           this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.pages)
           this.playerStats.pages++
+          this.baseLineLength++;
           document.getElementById('pageComplete-ref').id = 'pageComplete-ref-show'
         }
       }
@@ -211,10 +213,10 @@ class View {
   gameContainer = null;
   pointsContainer = null;
   pointRef = {
-    earnings: '',
-    letters: '',
-    words: '',
-    lines: '',
+    earnings: 0,
+    letters: 0,
+    words: 0,
+    lines: 0,
   }
   constructor(gameStateRef) {
     this.gameStateRef = gameStateRef;
@@ -222,67 +224,84 @@ class View {
 
   }
   setup() {
+
+    const masterContainer = document.createElement('div');
+    document.body.appendChild(masterContainer);
+    masterContainer.id = 'master-container';
+
     const gameContainer = document.createElement('div');
-    document.body.appendChild(gameContainer);
+    document.getElementById('master-container').appendChild(gameContainer);
     gameContainer.id = 'container';
     this.gameContainer = gameContainer;
-    //
+
     const pointsContainer = document.createElement('div');
-    document.body.appendChild(pointsContainer);
+    document.getElementById('master-container').appendChild(pointsContainer);
     pointsContainer.id = 'outer-container';
     this.pointsContainer = pointsContainer;
-    //
+
     const innerPointsContainer = document.createElement('div');
     document.getElementById('outer-container').appendChild(innerPointsContainer);
     innerPointsContainer.id = 'points-container';
     this.innerPointsContainer = innerPointsContainer;
-    //
+
     const earnings = document.createElement('div');
     document.getElementById('points-container').appendChild(earnings);
     earnings.innerHTML = `earnings: $${this.gameStateRef.playerStats.earnings}`;
     earnings.id = 'earnings-ref';
     this.pointRef.earnings = earnings.id;
-    //
+
     const letters = document.createElement('div');
     document.getElementById('points-container').appendChild(letters);
     letters.innerHTML = `letters: ${this.gameStateRef.playerStats.letters}`;
     letters.id = 'letters-ref';
     this.pointRef.letters = letters.id;
-    //
+
     const words = document.createElement('div');
     document.getElementById('points-container').appendChild(words);
     words.innerHTML = `words: ${this.gameStateRef.playerStats.words}`;
     words.id = 'words-ref';
     this.pointRef.words = words.id;
-    //
+
     const lines = document.createElement('div');
     document.getElementById('points-container').appendChild(lines);
     lines.innerHTML = `lines: ${this.gameStateRef.playerStats.lines}`;
     lines.id = 'lines-ref';
     this.pointRef.lines = lines.id;
 
-    const upgrades = document.createElement('div');
-    document.getElementById('outer-container').appendChild(upgrades);
-    upgrades.id = 'upgrades-container';
-    //
-    const lineComplete = document.createElement('div');
-    document.getElementById(upgrades.id).appendChild(lineComplete);
-    lineComplete.innerHTML = `line complete! +$${this.gameStateRef.rates.lines}`;
-    lineComplete.id = 'lineComplete-ref';
+    const sections = document.createElement('div');
+    document.getElementById('points-container').appendChild(sections);
+    sections.innerHTML = `sections: ${this.gameStateRef.playerStats.sections}`;
+    sections.id = 'sections-ref';
+    this.pointRef.sections = sections.id;
+
+    const pages = document.createElement('div');
+    document.getElementById('points-container').appendChild(pages);
+    pages.innerHTML = `pages: ${this.gameStateRef.playerStats.pages}`;
+    pages.id = 'pages-ref';
+    this.pointRef.pages = pages.id;
+
+    const notifications = document.createElement('div');
+    document.getElementById('outer-container').appendChild(notifications);
+    notifications.id = 'notifications-container';
 
     const wordComplete = document.createElement('div');
-    document.getElementById(upgrades.id).appendChild(wordComplete);
-    wordComplete.innerHTML = `word complete! +$${this.gameStateRef.rates.words}`;
+    document.getElementById(notifications.id).appendChild(wordComplete);
+    wordComplete.innerHTML = `+$${this.gameStateRef.rates.words} word complete!`;
     wordComplete.id = 'wordComplete-ref';
 
+    const lineComplete = document.createElement('div');
+    document.getElementById(notifications.id).appendChild(lineComplete);
+    lineComplete.innerHTML = `+$${this.gameStateRef.rates.lines} line complete!`;
+    lineComplete.id = 'lineComplete-ref';
+
     const sectionComplete = document.createElement('div');
-    document.getElementById(upgrades.id).appendChild(sectionComplete);
-    sectionComplete.innerHTML = `section complete! +$${this.gameStateRef.rates.sections}`;
+    document.getElementById(notifications.id).appendChild(sectionComplete);
+    sectionComplete.innerHTML = `+$${this.gameStateRef.rates.sections} section complete!`;
     sectionComplete.id = 'sectionComplete-ref';
 
     const pageComplete = document.createElement('div');
-    document.getElementById(upgrades.id).appendChild(pageComplete);
-    pageComplete.innerHTML = `page complete! +$${this.gameStateRef.rates.pages}`;
+    document.getElementById(notifications.id).appendChild(pageComplete);
+    pageComplete.innerHTML = `+$${this.gameStateRef.rates.pages} page complete!`;
     pageComplete.id = 'pageComplete-ref';
 
     // add initial words to view
