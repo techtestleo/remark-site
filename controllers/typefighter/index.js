@@ -26,6 +26,16 @@ class Game {
     // Create the game view, and bind to global state
     this.view = new View(this.memory);
     // logger
+    /*
+    
+    this.capture = new Capture();
+
+    this.memory = new Memory(this.capture);
+    
+    
+    
+    
+    */
   }
 }
 
