@@ -8,6 +8,29 @@ state class
 
 
 */
+class Robot {
+  gameStateRef = null;
+  ticker = null;
+  constructor(options) {
+    this.gameStateRef = options;
+  }
+  typeLetter() {
+    this.gameStateRef.lastPressWasHit = true;
+    this.gameStateRef.updateMemory();
+    this.gameStateRef.endPressUpdate();
+  }
+  start() {
+    this.ticker = setInterval(() => {
+      this.typeLetter();
+    }, this.gameStateRef.robotOptions.rate);
+  }
+  reset() {
+    clearInterval(this.ticker);
+  }
+  increaseRate() {
+    this.gameStateRef.increaseRate();
+  }
+}
 
 class MemoryState {
   upEvent = null;
@@ -17,6 +40,11 @@ class MemoryState {
   baseWordLength = 3;
   baseLineLength = 3;
   pointRef = {}
+  robot = null;
+  robotOptions = {
+    rate: 500,
+    cost: 500
+  }
   view = {
     // Array of words (words = array of letters)
     currentLine: createLine(this.baseLineLength, this.baseWordLength),
@@ -40,11 +68,11 @@ class MemoryState {
     baseLineLength: 10,
   }
   costs = {
-    letters: 10,
-    words: 25,
-    lines: 50,
-    sections: 100,
-    pages: 2250,
+    letters: 5,
+    words: 15,
+    lines: 30,
+    sections: 75,
+    pages: 250,
   }
   upgradeRate = {
     letters: 0.5,
@@ -56,7 +84,7 @@ class MemoryState {
   sectionRate = 2;
   pageRate = 2;
   playerStats = {
-    earnings: 10000,
+    earnings: 1.5,
     letters: 0,
     words: 0,
     lines: 0,
@@ -68,24 +96,85 @@ class MemoryState {
     this.upEvent = null;
     this.view.currentTarget = this.view.currentLine[0][0];
   }
-  /**
-   * 
-   * @param {string} upgradeCategory 
-   */
+  increaseRate() {
+    this.robotOptions.rate = Number(this.robotOptions.rate - 25);
+  }
   handleUpgrade(upgradeCategory) {
     this.rates[upgradeCategory] = Number((this.rates[upgradeCategory] * (1 + this.upgradeRate[upgradeCategory])).toFixed(2));
     if (document.getElementById(`${upgradeCategory}Complete-ref`)) {
       document.getElementById(`${upgradeCategory}Complete-ref`).innerHTML = `+$${this.rates[upgradeCategory]} ${upgradeCategory} complete!`;
+    } else if (document.getElementById(`${upgradeCategory}Complete-ref-show`)) {
+      document.getElementById(`${upgradeCategory}Complete-ref-show`).innerHTML = `+$${this.rates[upgradeCategory]} ${upgradeCategory} complete!`;
     }
 
   }
   // inputUpgradeCosts
   handleInputUpgrade(inputUpgradeCategory) {
-    this[inputUpgradeCategory] += 1;
-    this.inputUpgradeCosts[inputUpgradeCategory] = Number((this.inputUpgradeCosts[inputUpgradeCategory] * 1.5).toFixed(2))
-    document.getElementById(inputUpgradeCategory).innerHTML = `$${this.inputUpgradeCosts[inputUpgradeCategory]}`;
-    document.getElementById(`upgrade-${inputUpgradeCategory}`).innerHTML = `${inputUpgradeCategory.split('Length')[0].split('base')[1]} length: ${this[inputUpgradeCategory]}`.toLowerCase();
+    if (this.playerStats.earnings > this.inputUpgradeCosts[inputUpgradeCategory]) {
+      this[inputUpgradeCategory] += 1;
+      this.inputUpgradeCosts[inputUpgradeCategory] = Number((this.inputUpgradeCosts[inputUpgradeCategory] * 1.5).toFixed(2))
+      document.getElementById(inputUpgradeCategory).innerHTML = `$${this.inputUpgradeCosts[inputUpgradeCategory]}`;
+      document.getElementById(`upgrade-${inputUpgradeCategory}`).innerHTML = `${inputUpgradeCategory.split('Length')[0].split('base')[1]} length: ${this[inputUpgradeCategory]}`.toLowerCase();
+    }
+  }
+  purchaseBot(ev) {
+    if (this.playerStats.earnings > this.robotOptions.cost) {
 
+      document.getElementById('stats-container').removeChild(
+        document.getElementById('upgrade-bot-wrap')
+      );
+      this.robot = new Robot(this);
+
+
+      let btnWrap = document.createElement('div');
+      btnWrap.id = 'robot-button-wrap';
+      document.getElementById('stats-container').appendChild(
+        btnWrap
+      );
+      const rateText = document.createElement('div');
+      rateText.innerHTML = `Rate: ${this.robotOptions.rate}ms`;
+      rateText.className = 'payment'
+      btnWrap.appendChild(rateText);
+
+
+      let startStopWrap = document.createElement('div');
+      startStopWrap.id = 'start-stop';
+      btnWrap.appendChild(startStopWrap);
+
+      let startBtn = document.createElement('button');
+      startBtn.onclick = (ev) => { this.robot.start() };
+      startBtn.id = 'robot-start';
+      document.getElementById('start-stop').appendChild(
+        startBtn
+      )
+      startBtn.innerHTML = 'start';
+
+      let stopBtn = document.createElement('button');
+      stopBtn.onclick = (ev) => {
+        this.robot.reset()
+      };
+      stopBtn.id = 'robot-stop';
+      document.getElementById('start-stop').appendChild(
+        stopBtn
+      )
+      stopBtn.innerHTML = 'stop';
+
+      let incBtn = document.createElement('button');
+      incBtn.onclick = (ev) => {
+        if (this.playerStats.earnings > this.robotOptions.cost) {
+          this.playerStats.earnings = Number(this.playerStats.earnings - this.robotOptions.cost);
+          this.robot.increaseRate();
+          this.robotOptions.cost = Number((this.robotOptions.cost * 2).toFixed(2));
+          rateText.innerHTML = `Rate: ${this.robotOptions.rate}ms`;
+          incBtn.innerHTML = `reduce by 25ms - cost: $${this.robotOptions.cost}`;
+        }
+      };
+      incBtn.innerHTML = `reduce by 25ms - cost: $${this.robotOptions.cost}`;
+      incBtn.id = 'robot-inc';
+      btnWrap.appendChild(incBtn);
+
+
+    }
   }
   purchaseUpgrade(ev) {
     if (this.playerStats.earnings > this.costs[ev.target.id]) {
@@ -137,30 +226,28 @@ class MemoryState {
     }
   }
   endPressUpdate(ev) {
-    this.manageState(ev).then(() => {
-      // update current line
-      this.wordRefs.forEach((reference, i) => {
-        if (this.view.currentLine[i]) {
+    // update current line
+    this.wordRefs.forEach((reference, i) => {
+      if (this.view.currentLine[i]) {
 
-          document.getElementById(reference).innerHTML = this.view.currentLine[i].join('');
-        } else {
-          document.getElementById(reference).innerHTML = '???';
-        }
-      });
-      // Add new containers if line array is longer than captured references.
-      if (this.wordRefs.length < this.view.currentLine.length) {
-        let diff = this.view.currentLine.length - this.wordRefs.length;
-        for (diff; diff > 0; diff--) {
-          const wordDiv = document.createElement('div');
-          document.getElementById('container').appendChild(wordDiv);
-          wordDiv.innerHTML = this.view.currentLine[this.view.currentLine.length - 1].join('');
-          wordDiv.id = `word-${this.wordRefs.length}`;
-          this.wordRefs.push(wordDiv.id);
-        }
+        document.getElementById(reference).innerHTML = this.view.currentLine[i].join('');
+      } else {
+        document.getElementById(reference).innerHTML = '???';
       }
-      // Updates the point display
-      this.updatePointDisplay();
     });
+    // Add new containers if line array is longer than captured references.
+    if (this.wordRefs.length < this.view.currentLine.length) {
+      let diff = this.view.currentLine.length - this.wordRefs.length;
+      for (diff; diff > 0; diff--) {
+        const wordDiv = document.createElement('div');
+        document.getElementById('container').appendChild(wordDiv);
+        wordDiv.innerHTML = this.view.currentLine[this.view.currentLine.length - 1].join('');
+        wordDiv.id = `word-${this.wordRefs.length}`;
+        this.wordRefs.push(wordDiv.id);
+      }
+    }
+    // Updates the point display
+    this.updatePointDisplay();
   }
   updateMemory() {
     if (this.lastPressWasHit) {
@@ -174,7 +261,9 @@ class MemoryState {
       this.view.currentLine.shift();
       this.playerStats.words++;
       this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.words)
-      document.getElementById('wordsComplete-ref').id = 'wordsComplete-ref-show'
+      if (document.getElementById('wordsComplete-ref')) {
+        document.getElementById('wordsComplete-ref').id = 'wordsComplete-ref-show'
+      }
     }
     // go to the next line if the current line is done
     if (this.view.currentLine.length === 0) {
@@ -183,19 +272,31 @@ class MemoryState {
       this.view.currentLine = createLine(this.baseWordLength, this.baseWordLength);
       this.playerStats.lines++;
       this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.lines)
-      document.getElementById('linesComplete-ref').id = 'linesComplete-ref-show';
+      if (document.getElementById('linesComplete-ref')) {
+
+        document.getElementById('linesComplete-ref').id = 'linesComplete-ref-show';
+      }
       // increment sections
       if (this.playerStats.lines % this.sectionRate === 0) {
         this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.sections)
         this.playerStats.sections++
-        this.baseWordLength++;
-        document.getElementById('sectionsComplete-ref').id = 'sectionsComplete-ref-show'
+
+        if (document.getElementById('sectionsComplete-ref')) {
+          document.getElementById('sectionsComplete-ref').id = 'sectionsComplete-ref-show'
+        }
         // increment page
         if (this.playerStats.sections % this.pageRate === 0) {
           this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.pages)
           this.playerStats.pages++
+          this.baseWordLength++;
+          document.getElementById(`upgrade-baseWordLength`).innerHTML = `word length: ${this.baseWordLength}`;
+          if (document.getElementById('pagesComplete-ref')) {
+            document.getElementById('pagesComplete-ref').id = 'pagesComplete-ref-show'
+          }
+        }
+        if (this.pageRate % 2 === 0) {
           this.baseLineLength++;
-          document.getElementById('pagesComplete-ref').id = 'pagesComplete-ref-show'
+          document.getElementById(`upgrade-baseLineLength`).innerHTML = `line length: ${this.baseLineLength}`;
         }
       }
     }
@@ -218,8 +319,10 @@ class MemoryState {
       document.getElementById('pagesComplete-ref-show').id = 'pagesComplete-ref'
     }
     if (document.getElementById('upgradeComplete-ref-show')) {
+      console.log('hide upgrade');
       document.getElementById('upgradeComplete-ref-show').id = 'upgradeComplete-ref'
     }
+
   }
   manageState(ev) {
     return new Promise((resolve, reject) => {
@@ -309,6 +412,7 @@ class View {
     const upgradeContainer = document.createElement('div');
     document.getElementById('upgradeWrapper-container').appendChild(upgradeContainer);
     upgradeContainer.id = 'upgrade-container';
+    upgradeContainer.className = 'upgrade-container';
     this.upgradeContainer = upgradeContainer;
     // starting rates
     const payment = document.createElement('div');
@@ -403,8 +507,9 @@ class View {
     const purchaseBotButton = document.createElement('button');
     purchaseBotButton.innerHTML = `$150`;
     document.getElementById('upgrade-bot-wrap').appendChild(purchaseBotButton);
-
-
+    purchaseBotButton.onclick = (ev) => {
+      this.gameStateRef.purchaseBot(ev);
+    }
 
     //
     const innerPointsContainer = document.createElement('div');

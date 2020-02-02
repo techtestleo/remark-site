@@ -7,6 +7,7 @@
   width: 100%;
   height: 100%;
 }
+
 #stats-container {
   width: 50%;
   color: $core-bgd;
@@ -35,12 +36,40 @@
   overflow: hidden;
 }
 
+#start-stop {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
 .payment {
   font-style: italic;
   margin: 4px 0px 4px 8px;
+  text-align: center;
 }
-
-#upgrade-container {
+#robot-button-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+    button {
+    flex-shrink: 0;
+    min-width: 50%;
+    font-size: $font-size-contents;
+    font-style: italic;
+    height: 10*$unit;
+    white-space: nowrap;
+    border-radius: 4*$unit;
+    box-shadow: 1.5*$unit 1.5*$unit $core-bg;
+    background-color: $core-bg;
+    color: $core-high;
+  }
+  button:active {
+    background-color: $core-high;
+    color: $core-bg;
+  }
+}
+.upgrade-container {
   width: 50%;
   color: $core-bgd;
   display: flex;
@@ -72,7 +101,7 @@
 }
 #word-0 {
   color: $core-high !important;
-  // margin-left: -12px !important;
+  margin-left: -12px !important;
 }
 #word-0::first-letter {
     color: #189f62;
@@ -131,41 +160,41 @@
 }
 #linesComplete-ref {
   opacity: 0;
-  transition: opacity .25s ease-in;
+  transition: opacity 0.15s ease-in;
 }
 #linesComplete-ref-show {
   opacity: 1;
-  transition: opacity .25s ease-in;
+  transition: opacity 0.15s ease-in;
 }
 #wordsComplete-ref {
   opacity: 0;
-  transition: opacity .25s ease-in;
+  transition: opacity 0.15s ease-in;
 }
 #wordsComplete-ref-show {
   opacity: 1;
-  transition: opacity .25s ease-in;
+  transition: opacity 0.15s ease-in;
 }
 #sectionsComplete-ref {
   opacity: 0;
-  transition: opacity .25s ease-in;
+  transition: opacity 0.15s ease-in;
 }
 #sectionsComplete-ref-show {
   opacity: 1;
-  transition: opacity .25s ease-in;
+  transition: opacity 0.15s ease-in;
 }
 #pagesComplete-ref {
   opacity: 0;
-  transition: opacity .25s ease-in;
+  transition: opacity 0.15s ease-in;
 }
 #pagesComplete-ref-show {
   opacity: 1;
-  transition: opacity .25s ease-in;
+  transition: opacity 0.15s ease-in;
 }
 #upgradeComplete-ref {
   opacity: 0;
-  transition: opacity .25s ease-in;
+  transition: opacity 0.15s ease-in;
 }
 #upgradeComplete-ref-show {
   opacity: 1;
-  transition: opacity .25s ease-in;
+  transition: opacity 0.15s ease-in;
 }
