@@ -34,11 +34,25 @@ class MemoryState {
     lines: 0.25,
     sections: 0.75,
     pages: 2.5,
-    sectionRate: 2,
-    pageRate: 2
   }
+  costs = {
+    letters: 10,
+    words: 25,
+    lines: 50,
+    sections: 100,
+    pages: 2250,
+  }
+  upgradeRate = {
+    letters: 0.5,
+    words: 0.75,
+    lines: 1.1,
+    sections: 1.75,
+    pages: 2.23,
+  }
+  sectionRate = 2;
+  pageRate = 2;
   playerStats = {
-    earnings: 0,
+    earnings: 10000,
     letters: 0,
     words: 0,
     lines: 0,
@@ -49,6 +63,38 @@ class MemoryState {
     this.downEvent = null;
     this.upEvent = null;
     this.view.currentTarget = this.view.currentLine[0][0];
+  }
+  /**
+   * 
+   * @param {string} upgradeCategory 
+   */
+  handleUpgrade(upgradeCategory) {
+    this.rates[upgradeCategory] = Number((this.rates[upgradeCategory] * (1 + this.upgradeRate[upgradeCategory])).toFixed(2));
+    if (document.getElementById(`${upgradeCategory}Complete-ref`)) {
+      document.getElementById(`${upgradeCategory}Complete-ref`).innerHTML = `+$${this.rates[upgradeCategory]} ${upgradeCategory} complete!`;
+    }
+
+  }
+  purchaseUpgrade(ev) {
+    if (this.playerStats.earnings > this.costs[ev.target.id]) {
+      // increase costs
+      this.costs[ev.target.id] = Number((this.costs[ev.target.id] * 1.1).toFixed(2));
+      // increse upgrade rate
+      this.upgradeRate[ev.target.id] = Number((this.upgradeRate[ev.target.id] + 0.01).toFixed(2));
+      // update cost button
+      document.getElementById(ev.target.id).innerHTML = `$${this.costs[ev.target.id]} +$${this.upgradeRate[ev.target.id]}%`;
+      // decrement earnings
+      this.playerStats.earnings = Number((this.playerStats.earnings - this.costs[ev.target.id]).toFixed(2));
+      // update upgrade notification
+      this.handleUpgrade(ev.target.id);
+
+      if (document.getElementById('upgradeComplete-ref')) {
+        document.getElementById('upgradeComplete-ref').id = 'upgradeComplete-ref-show';
+      }
+      document.getElementById('earnings-ref').innerHTML = `earnings: ${this.playerStats.earnings}`;
+      document.getElementById(`upgrade-${ev.target.id}`).innerHTML = `${ev.target.id}: $${this.rates[ev.target.id]}`;
+    }
+
   }
   keyDown(ev) {
     this.manageState(ev).then(() => {
@@ -65,7 +111,6 @@ class MemoryState {
     const pointRefs = Object.values(this.pointRef);
     pointRefs.forEach((reference) => {
       if (reference === 'earnings-ref') {
-        console.log(this.playerStats);
         document.getElementById(reference).innerHTML = `${reference.replace('-ref', '')}: $${this.playerStats[reference.replace('-ref', '')]}`;
       } else {
         document.getElementById(reference).innerHTML = `${reference.replace('-ref', '')}: ${this.playerStats[reference.replace('-ref', '')]}`;
@@ -117,7 +162,7 @@ class MemoryState {
       this.view.currentLine.shift();
       this.playerStats.words++;
       this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.words)
-      document.getElementById('wordComplete-ref').id = 'wordComplete-ref-show'
+      document.getElementById('wordsComplete-ref').id = 'wordsComplete-ref-show'
     }
     // go to the next line if the current line is done
     if (this.view.currentLine.length === 0) {
@@ -126,19 +171,19 @@ class MemoryState {
       this.view.currentLine = createLine(this.baseWordLength, this.baseWordLength);
       this.playerStats.lines++;
       this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.lines)
-      document.getElementById('lineComplete-ref').id = 'lineComplete-ref-show';
+      document.getElementById('linesComplete-ref').id = 'linesComplete-ref-show';
       // increment sections
-      if (this.playerStats.lines % this.rates.sectionRate === 0) {
+      if (this.playerStats.lines % this.sectionRate === 0) {
         this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.sections)
         this.playerStats.sections++
         this.baseWordLength++;
-        document.getElementById('sectionComplete-ref').id = 'sectionComplete-ref-show'
+        document.getElementById('sectionsComplete-ref').id = 'sectionsComplete-ref-show'
         // increment page
-        if (this.playerStats.sections % this.rates.pageRate === 0) {
+        if (this.playerStats.sections % this.pageRate === 0) {
           this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.pages)
           this.playerStats.pages++
           this.baseLineLength++;
-          document.getElementById('pageComplete-ref').id = 'pageComplete-ref-show'
+          document.getElementById('pagesComplete-ref').id = 'pagesComplete-ref-show'
         }
       }
     }
@@ -148,17 +193,20 @@ class MemoryState {
     this.playerStats.earnings = Number(this.playerStats.earnings.toFixed(2));
   }
   updateNotifications() {
-    if (document.getElementById('lineComplete-ref-show')) {
-      document.getElementById('lineComplete-ref-show').id = 'lineComplete-ref'
+    if (document.getElementById('linesComplete-ref-show')) {
+      document.getElementById('linesComplete-ref-show').id = 'linesComplete-ref'
     }
-    if (document.getElementById('wordComplete-ref-show')) {
-      document.getElementById('wordComplete-ref-show').id = 'wordComplete-ref'
+    if (document.getElementById('wordsComplete-ref-show')) {
+      document.getElementById('wordsComplete-ref-show').id = 'wordsComplete-ref'
     }
-    if (document.getElementById('sectionComplete-ref-show')) {
-      document.getElementById('sectionComplete-ref-show').id = 'sectionComplete-ref'
+    if (document.getElementById('sectionsComplete-ref-show')) {
+      document.getElementById('sectionsComplete-ref-show').id = 'sectionsComplete-ref'
     }
-    if (document.getElementById('pageComplete-ref-show')) {
-      document.getElementById('pageComplete-ref-show').id = 'pageComplete-ref'
+    if (document.getElementById('pagesComplete-ref-show')) {
+      document.getElementById('pagesComplete-ref-show').id = 'pagesComplete-ref'
+    }
+    if (document.getElementById('upgradeComplete-ref-show')) {
+      document.getElementById('upgradeComplete-ref-show').id = 'upgradeComplete-ref'
     }
   }
   manageState(ev) {
@@ -212,6 +260,7 @@ class View {
   nextWordRefs = [];
   gameContainer = null;
   pointsContainer = null;
+  upgradeContainer = null;
   pointRef = {
     earnings: 0,
     letters: 0,
@@ -223,6 +272,41 @@ class View {
     this.setup();
 
   }
+  makeUpgradeContainer() {
+    const upgradeContainer = document.createElement('div');
+    document.getElementById('master-container').appendChild(upgradeContainer);
+    upgradeContainer.id = 'upgrade-container';
+    this.upgradeContainer = upgradeContainer;
+    // starting rates
+    const payment = document.createElement('div');
+    payment.id = 'payment';
+    payment.innerHTML = 'Payment Rates:'
+    upgradeContainer.appendChild(payment);
+    const rates = Object.entries(this.gameStateRef.rates);
+    const costs = Object.values(this.gameStateRef.costs);
+    const upgradeRates = Object.values(this.gameStateRef.upgradeRate);
+    rates.forEach((rate, i) => {
+
+      const rateContainer = document.createElement('div');
+      rateContainer.id = `rate-${i}`;
+      rateContainer.className = `rate`;
+      document.getElementById(upgradeContainer.id).appendChild(rateContainer);
+
+      const upgradeCategory = document.createElement('div');
+      upgradeCategory.innerHTML = `${rate[0]}: $${rate[1]}`;
+      upgradeCategory.id = `upgrade-${rate[0]}`;
+
+      document.getElementById(rateContainer.id).appendChild(upgradeCategory);
+
+      const upgradeButton = document.createElement('button');
+      upgradeButton.innerHTML = `$${costs[i]} +${upgradeRates[i]}%`
+      upgradeButton.id = `${rate[0]}`
+      upgradeButton.onclick = (ev) => { this.gameStateRef.purchaseUpgrade(ev) };
+
+      document.getElementById(rateContainer.id).appendChild(upgradeButton);
+
+    });
+  }
   setup() {
 
     const masterContainer = document.createElement('div');
@@ -230,14 +314,16 @@ class View {
     masterContainer.id = 'master-container';
 
     const gameContainer = document.createElement('div');
-    document.getElementById('master-container').appendChild(gameContainer);
+    document.getElementById(masterContainer.id).appendChild(gameContainer);
     gameContainer.id = 'container';
     this.gameContainer = gameContainer;
 
     const pointsContainer = document.createElement('div');
-    document.getElementById('master-container').appendChild(pointsContainer);
+    document.getElementById(masterContainer.id).appendChild(pointsContainer);
     pointsContainer.id = 'outer-container';
     this.pointsContainer = pointsContainer;
+
+    this.makeUpgradeContainer();
 
     const innerPointsContainer = document.createElement('div');
     document.getElementById('outer-container').appendChild(innerPointsContainer);
@@ -284,25 +370,34 @@ class View {
     document.getElementById('outer-container').appendChild(notifications);
     notifications.id = 'notifications-container';
 
-    const wordComplete = document.createElement('div');
-    document.getElementById(notifications.id).appendChild(wordComplete);
-    wordComplete.innerHTML = `+$${this.gameStateRef.rates.words} word complete!`;
-    wordComplete.id = 'wordComplete-ref';
+    const wordsComplete = document.createElement('div');
+    document.getElementById(notifications.id).appendChild(wordsComplete);
+    wordsComplete.innerHTML = `+ $${this.gameStateRef.rates.words} word complete!`;
+    wordsComplete.id = 'wordsComplete-ref';
 
-    const lineComplete = document.createElement('div');
-    document.getElementById(notifications.id).appendChild(lineComplete);
-    lineComplete.innerHTML = `+$${this.gameStateRef.rates.lines} line complete!`;
-    lineComplete.id = 'lineComplete-ref';
+    const linesComplete = document.createElement('div');
+    document.getElementById(notifications.id).appendChild(linesComplete);
+    linesComplete.innerHTML = `+ $${this.gameStateRef.rates.lines} line complete!`;
+    linesComplete.id = 'linesComplete-ref';
 
-    const sectionComplete = document.createElement('div');
-    document.getElementById(notifications.id).appendChild(sectionComplete);
-    sectionComplete.innerHTML = `+$${this.gameStateRef.rates.sections} section complete!`;
-    sectionComplete.id = 'sectionComplete-ref';
+    const sectionsComplete = document.createElement('div');
+    document.getElementById(notifications.id).appendChild(sectionsComplete);
+    sectionsComplete.innerHTML = `+ $${this.gameStateRef.rates.sections} section complete!`;
+    sectionsComplete.id = 'sectionsComplete-ref';
 
-    const pageComplete = document.createElement('div');
-    document.getElementById(notifications.id).appendChild(pageComplete);
-    pageComplete.innerHTML = `+$${this.gameStateRef.rates.pages} page complete!`;
-    pageComplete.id = 'pageComplete-ref';
+    const pagesComplete = document.createElement('div');
+    document.getElementById(notifications.id).appendChild(pagesComplete);
+    pagesComplete.innerHTML = `+ $${this.gameStateRef.rates.pages} page complete!`;
+    pagesComplete.id = 'pagesComplete-ref';
+
+    const upgradeComplete = document.createElement('div');
+    document.getElementById(notifications.id).appendChild(upgradeComplete);
+    upgradeComplete.innerHTML = `upgrade complete!`;
+    upgradeComplete.id = 'upgradeComplete-ref';
+
+    document.getElementById(notifications.id).appendChild(
+      document.createElement('hr')
+    );
 
     // add initial words to view
     this.gameStateRef.view.currentLine.forEach((word, i) => {

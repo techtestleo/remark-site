@@ -1,17 +1,30 @@
 @import './constants/global.scss';
 
-body #container {
-  font-family: $game-family
-}
 
 #outer-container {
   display: flex;
   flex-direction: row;
   height: 50%;
-  font-family: $game-family
 }
 #master-container {
-  // width: 66%;
+  background-color: $core-bg;
+}
+
+#payment {
+  font-style: italic;
+  margin: 4px 0px 4px 8px;
+}
+
+#upgrade-container {
+  width: 50%;
+  color: $core-bgd;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background-color: $core-spot;
+  font-size: $font-size-body;
+  box-sizing: border-box;
+  padding: 8px;
 }
 
 #container {
@@ -36,6 +49,26 @@ body #container {
 #word-0::first-letter {
     color: #189f62;
   }
+
+.rate {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: $font-size-game;
+  div {
+    align-items: center;
+    display: flex;
+    padding-left: 2*$unit;
+  }
+  button {
+    flex-shrink: 0;
+    width: 50%;
+    min-width: 50%;
+    font-size: $font-size-contents;
+    height: 10*$unit;
+    white-space: nowrap;
+  }
+}
 #points-container {
   width: 50%;
   color: $core-bgd;
@@ -57,38 +90,46 @@ body #container {
   font-size: $font-size-body;
   box-sizing: border-box;
     div {
-    margin: 4px 16px 4px 16px;
+    margin: 12px 16px 4px 16px;
   }
 }
-#lineComplete-ref {
+#linesComplete-ref {
   opacity: 0;
   transition: opacity .25s ease-in;
 }
-#lineComplete-ref-show {
+#linesComplete-ref-show {
   opacity: 1;
   transition: opacity .25s ease-in;
 }
-#wordComplete-ref {
+#wordsComplete-ref {
   opacity: 0;
   transition: opacity .25s ease-in;
 }
-#wordComplete-ref-show {
+#wordsComplete-ref-show {
   opacity: 1;
   transition: opacity .25s ease-in;
 }
-#sectionComplete-ref {
+#sectionsComplete-ref {
   opacity: 0;
   transition: opacity .25s ease-in;
 }
-#sectionComplete-ref-show {
+#sectionsComplete-ref-show {
   opacity: 1;
   transition: opacity .25s ease-in;
 }
-#pageComplete-ref {
+#pagesComplete-ref {
   opacity: 0;
   transition: opacity .25s ease-in;
 }
-#pageComplete-ref-show {
+#pagesComplete-ref-show {
+  opacity: 1;
+  transition: opacity .25s ease-in;
+}
+#upgradeComplete-ref {
+  opacity: 0;
+  transition: opacity .25s ease-in;
+}
+#upgradeComplete-ref-show {
   opacity: 1;
   transition: opacity .25s ease-in;
 }
