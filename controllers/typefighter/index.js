@@ -272,15 +272,36 @@ class View {
     this.setup();
 
   }
-  makeUpgradeContainer() {
+
+  setup() {
+
+    const masterContainer = document.createElement('div');
+    document.body.appendChild(masterContainer);
+    masterContainer.id = 'master-container';
+
+    const gameContainer = document.createElement('div');
+    document.getElementById(masterContainer.id).appendChild(gameContainer);
+    gameContainer.id = 'container';
+    this.gameContainer = gameContainer;
+
+    const pointsContainer = document.createElement('div');
+    document.getElementById(masterContainer.id).appendChild(pointsContainer);
+    pointsContainer.id = 'outer-container';
+    this.pointsContainer = pointsContainer;
+
+    const upgradeWrapper = document.createElement('div');
+    document.getElementById(masterContainer.id).appendChild(upgradeWrapper);
+    upgradeWrapper.id = 'upgradeWrapper-container';
+    this.upgradeWrapper = upgradeWrapper;
+
     const upgradeContainer = document.createElement('div');
-    document.getElementById('master-container').appendChild(upgradeContainer);
+    document.getElementById('upgradeWrapper-container').appendChild(upgradeContainer);
     upgradeContainer.id = 'upgrade-container';
     this.upgradeContainer = upgradeContainer;
     // starting rates
     const payment = document.createElement('div');
-    payment.id = 'payment';
-    payment.innerHTML = 'Payment Rates:'
+    payment.className = 'payment';
+    payment.innerHTML = 'Upgrade payment rates:'
     upgradeContainer.appendChild(payment);
     const rates = Object.entries(this.gameStateRef.rates);
     const costs = Object.values(this.gameStateRef.costs);
@@ -306,24 +327,51 @@ class View {
       document.getElementById(rateContainer.id).appendChild(upgradeButton);
 
     });
-  }
-  setup() {
 
-    const masterContainer = document.createElement('div');
-    document.body.appendChild(masterContainer);
-    masterContainer.id = 'master-container';
+    // Stats & word/line upgrades
 
-    const gameContainer = document.createElement('div');
-    document.getElementById(masterContainer.id).appendChild(gameContainer);
-    gameContainer.id = 'container';
-    this.gameContainer = gameContainer;
+    const statsContainer = document.createElement('div');
+    document.getElementById('upgradeWrapper-container').appendChild(statsContainer);
+    statsContainer.id = 'stats-container';
+    this.statsContainer = statsContainer;
 
-    const pointsContainer = document.createElement('div');
-    document.getElementById(masterContainer.id).appendChild(pointsContainer);
-    pointsContainer.id = 'outer-container';
-    this.pointsContainer = pointsContainer;
+    const upgradeText = document.createElement('div');
+    upgradeText.className = 'payment';
+    upgradeText.innerHTML = 'Upgrade inputs:'
+    statsContainer.appendChild(upgradeText);
 
-    this.makeUpgradeContainer();
+    // upgrade word length
+    const upgradeWordWrap = document.createElement('div');
+    upgradeWordWrap.id = 'upgrade-word-wrap';
+    upgradeWordWrap.className = 'rate';
+    document.getElementById('stats-container').appendChild(upgradeWordWrap);
+
+    const upgradeWord = document.createElement('div');
+    document.getElementById('upgrade-word-wrap').appendChild(upgradeWord);
+    upgradeWord.id = 'upgrade-word-length'
+    upgradeWord.innerHTML = 'word length:';
+
+    const upgradeWordButton = document.createElement('button');
+    upgradeWordButton.innerHTML = `$5`;
+    document.getElementById('upgrade-word-wrap').appendChild(upgradeWordButton);
+
+    const upgradeLineWrap = document.createElement('div');
+    upgradeLineWrap.id = 'upgrade-line-wrap';
+    upgradeLineWrap.className = 'rate';
+    document.getElementById('stats-container').appendChild(upgradeLineWrap);
+
+    const upgradeLine = document.createElement('div');
+    document.getElementById('upgrade-line-wrap').appendChild(upgradeLine);
+    upgradeLine.id = 'upgrade-Line-length'
+    upgradeLine.innerHTML = 'line length:';
+
+    const upgradeLineButton = document.createElement('button');
+    upgradeLineButton.innerHTML = `$10`;
+    document.getElementById('upgrade-line-wrap').appendChild(upgradeLineButton);
+
+    document.getElementById('stats-container').appendChild(
+      document.createElement('hr')
+    )
 
     const innerPointsContainer = document.createElement('div');
     document.getElementById('outer-container').appendChild(innerPointsContainer);
@@ -394,10 +442,6 @@ class View {
     document.getElementById(notifications.id).appendChild(upgradeComplete);
     upgradeComplete.innerHTML = `upgrade complete!`;
     upgradeComplete.id = 'upgradeComplete-ref';
-
-    document.getElementById(notifications.id).appendChild(
-      document.createElement('hr')
-    );
 
     // add initial words to view
     this.gameStateRef.view.currentLine.forEach((word, i) => {

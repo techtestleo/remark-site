@@ -1,4 +1,4 @@
-const allKeys = 'qwertyuiopasdfghjklzxcvbnm'
+const allKeys = 'etainshrdfjkl'
 const letters = allKeys.split('');
 
 /**

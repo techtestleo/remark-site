@@ -1,16 +1,41 @@
 @import './constants/global.scss';
 
 
+#upgradeWrapper-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+}
+#stats-container {
+  width: 50%;
+  color: $core-bgd;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background-color: $core-spot;
+  font-size: $font-size-body;
+  box-sizing: border-box;
+  padding: 8px;
+    div {
+    margin: 4px 4px;
+  }
+  hr {
+    margin: 16px 0px;
+  }
+}
+
 #outer-container {
   display: flex;
   flex-direction: row;
-  height: 50%;
 }
 #master-container {
   background-color: $core-bg;
+  height: 100%;
+  overflow: hidden;
 }
 
-#payment {
+.payment {
   font-style: italic;
   margin: 4px 0px 4px 8px;
 }
@@ -25,6 +50,9 @@
   font-size: $font-size-body;
   box-sizing: border-box;
   padding: 8px;
+  div {
+    margin: 4px 4px;
+  }
 }
 
 #container {
@@ -54,7 +82,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  font-size: $font-size-game;
+  font-size: $font-size-contents;
   div {
     align-items: center;
     display: flex;
@@ -62,11 +90,19 @@
   }
   button {
     flex-shrink: 0;
-    width: 50%;
     min-width: 50%;
     font-size: $font-size-contents;
+    font-style: italic;
     height: 10*$unit;
     white-space: nowrap;
+    border-radius: 4*$unit;
+    box-shadow: 1.5*$unit 1.5*$unit $core-bg;
+    background-color: $core-bg;
+    color: $core-high;
+  }
+  button:active {
+     background-color: $core-high;
+       color: $core-bg;
   }
 }
 #points-container {
