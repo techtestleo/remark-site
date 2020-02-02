@@ -1,3 +1,7 @@
-# Type Fighter
+# Type Fighter[^1]
 
-Press space to start, then type the words that you see before you.
+Type to earn your keep. Spend your hard earned cash on upgrades. Save up for a robot, who will do the typing for you.
+
+---
+
+[^1]: Leo Coleman (c)

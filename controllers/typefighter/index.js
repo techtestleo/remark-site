@@ -68,7 +68,7 @@ class MemoryState {
     baseLineLength: 10,
   }
   costs = {
-    letters: 5,
+    letters: 1,
     words: 15,
     lines: 30,
     sections: 75,
@@ -84,7 +84,7 @@ class MemoryState {
   sectionRate = 2;
   pageRate = 2;
   playerStats = {
-    earnings: 1.5,
+    earnings: 0,
     letters: 0,
     words: 0,
     lines: 0,
@@ -391,7 +391,7 @@ class View {
   setup() {
 
     const masterContainer = document.createElement('div');
-    document.body.appendChild(masterContainer);
+    document.body.insertBefore(masterContainer, document.getElementsByClassName('footnotes')[0]);
     masterContainer.id = 'master-container';
 
     const gameContainer = document.createElement('div');
