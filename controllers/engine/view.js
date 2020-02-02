@@ -16,29 +16,19 @@ class View {
     this.setup();
   }
   update(ev) {
-    if (ev.type === 'keydown') {
+    if (ev.type === 'keyup') {
       this.updateNotifications();
     }
   }
 
   updateNotifications() {
-    if (document.getElementById('linesComplete-ref-show')) {
-      document.getElementById('linesComplete-ref-show').id = 'linesComplete-ref'
+    const shown = document.getElementsByClassName('complete-ref-show');
+    if (shown.length > 0) {
+      console.log(shown)
+      shown.forEach((ele) => {
+        ele.className = 'complete-ref';
+      })
     }
-    if (document.getElementById('wordsComplete-ref-show')) {
-      document.getElementById('wordsComplete-ref-show').id = 'wordsComplete-ref'
-    }
-    if (document.getElementById('sectionsComplete-ref-show')) {
-      document.getElementById('sectionsComplete-ref-show').id = 'sectionsComplete-ref'
-    }
-    if (document.getElementById('pagesComplete-ref-show')) {
-      document.getElementById('pagesComplete-ref-show').id = 'pagesComplete-ref'
-    }
-    if (document.getElementById('upgradeComplete-ref-show')) {
-      console.log('hide upgrade');
-      document.getElementById('upgradeComplete-ref-show').id = 'upgradeComplete-ref'
-    }
-
   }
 
   setup() {
@@ -50,6 +40,7 @@ class View {
     const gameContainer = document.createElement('div');
     document.getElementById(masterContainer.id).appendChild(gameContainer);
     gameContainer.id = 'container';
+    gameContainer.className = 'upgrade-container';
     this.gameContainer = gameContainer;
 
     const pointsContainer = document.createElement('div');
@@ -102,6 +93,7 @@ class View {
     const statsContainer = document.createElement('div');
     document.getElementById('upgradeWrapper-container').appendChild(statsContainer);
     statsContainer.id = 'stats-container';
+    statsContainer.className = 'upgrade-container';
     this.statsContainer = statsContainer;
 
     const upgradeText = document.createElement('div');
@@ -168,6 +160,7 @@ class View {
     const innerPointsContainer = document.createElement('div');
     document.getElementById('outer-container').appendChild(innerPointsContainer);
     innerPointsContainer.id = 'points-container';
+    innerPointsContainer.className = 'upgrade-container'
     this.innerPointsContainer = innerPointsContainer;
 
     const earnings = document.createElement('div');
@@ -209,31 +202,37 @@ class View {
     const notifications = document.createElement('div');
     document.getElementById('outer-container').appendChild(notifications);
     notifications.id = 'notifications-container';
+    notifications.className = 'upgrade-container';
 
     const wordsComplete = document.createElement('div');
     document.getElementById(notifications.id).appendChild(wordsComplete);
     wordsComplete.innerHTML = `+ $${this.gameStateRef.rates.words} word complete!`;
     wordsComplete.id = 'wordsComplete-ref';
+    wordsComplete.className = 'complete-ref';
 
     const linesComplete = document.createElement('div');
     document.getElementById(notifications.id).appendChild(linesComplete);
     linesComplete.innerHTML = `+ $${this.gameStateRef.rates.lines} line complete!`;
     linesComplete.id = 'linesComplete-ref';
+    linesComplete.className = 'complete-ref';
 
     const sectionsComplete = document.createElement('div');
     document.getElementById(notifications.id).appendChild(sectionsComplete);
     sectionsComplete.innerHTML = `+ $${this.gameStateRef.rates.sections} section complete!`;
     sectionsComplete.id = 'sectionsComplete-ref';
+    sectionsComplete.className = 'complete-ref';
 
     const pagesComplete = document.createElement('div');
     document.getElementById(notifications.id).appendChild(pagesComplete);
     pagesComplete.innerHTML = `+ $${this.gameStateRef.rates.pages} page complete!`;
     pagesComplete.id = 'pagesComplete-ref';
+    pagesComplete.className = 'complete-ref';
 
     const upgradeComplete = document.createElement('div');
     document.getElementById(notifications.id).appendChild(upgradeComplete);
     upgradeComplete.innerHTML = `upgrade complete!`;
     upgradeComplete.id = 'upgradeComplete-ref';
+    upgradeComplete.className = 'complete-ref';
 
     // add initial words to view
     this.gameStateRef.view.currentLine.forEach((word, i) => {
