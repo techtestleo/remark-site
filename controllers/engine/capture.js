@@ -1,15 +1,12 @@
 class Capture {
-  bindKeyUp(memoryRef) {
-    console.log(memoryRef);
+  bindKeyUp(handler) {
     document.addEventListener('keyup', (ev) => {
-      memoryRef.keyUp(ev);
+      handler(ev);
     });
   }
-  bindKeyDown(memoryRef) {
-    console.log(memoryRef);
+  bindKeyDown(handler) {
     document.addEventListener('keydown', (ev) => {
-      memoryRef.keyDown(ev);
-      memoryRef.updateNotifications();
+      handler(ev);
     });
   }
 }

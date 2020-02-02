@@ -291,25 +291,6 @@ class MemoryState {
     this.view.currentTarget = this.view.currentLine[0][0];
     this.playerStats.earnings = Number(this.playerStats.earnings.toFixed(2));
   }
-  updateNotifications() {
-    if (document.getElementById('linesComplete-ref-show')) {
-      document.getElementById('linesComplete-ref-show').id = 'linesComplete-ref'
-    }
-    if (document.getElementById('wordsComplete-ref-show')) {
-      document.getElementById('wordsComplete-ref-show').id = 'wordsComplete-ref'
-    }
-    if (document.getElementById('sectionsComplete-ref-show')) {
-      document.getElementById('sectionsComplete-ref-show').id = 'sectionsComplete-ref'
-    }
-    if (document.getElementById('pagesComplete-ref-show')) {
-      document.getElementById('pagesComplete-ref-show').id = 'pagesComplete-ref'
-    }
-    if (document.getElementById('upgradeComplete-ref-show')) {
-      console.log('hide upgrade');
-      document.getElementById('upgradeComplete-ref-show').id = 'upgradeComplete-ref'
-    }
-
-  }
   manageState(ev) {
     return new Promise((resolve, reject) => {
       this.keyState.shift = ev.shiftKey;

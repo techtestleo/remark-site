@@ -29,8 +29,14 @@ class Game {
     this.bind();
   }
   bind() {
-    this.capture.bindKeyUp(this.memory);
-    this.capture.bindKeyDown(this.memory);
+    this.capture.bindKeyUp((ev) => {
+      this.memory.keyUp(ev);
+      this.view.update(ev);
+    });
+    this.capture.bindKeyDown((ev) => {
+      this.memory.keyDown(ev);
+      this.view.update(ev);
+    });
   }
 }
 

@@ -15,6 +15,30 @@ class View {
     this.gameStateRef = gameStateRef;
     this.setup();
   }
+  update(ev) {
+    if (ev.type === 'keydown') {
+      this.updateNotifications();
+    }
+  }
+  updateNotifications() {
+    if (document.getElementById('linesComplete-ref-show')) {
+      document.getElementById('linesComplete-ref-show').id = 'linesComplete-ref'
+    }
+    if (document.getElementById('wordsComplete-ref-show')) {
+      document.getElementById('wordsComplete-ref-show').id = 'wordsComplete-ref'
+    }
+    if (document.getElementById('sectionsComplete-ref-show')) {
+      document.getElementById('sectionsComplete-ref-show').id = 'sectionsComplete-ref'
+    }
+    if (document.getElementById('pagesComplete-ref-show')) {
+      document.getElementById('pagesComplete-ref-show').id = 'pagesComplete-ref'
+    }
+    if (document.getElementById('upgradeComplete-ref-show')) {
+      console.log('hide upgrade');
+      document.getElementById('upgradeComplete-ref-show').id = 'upgradeComplete-ref'
+    }
+
+  }
 
   setup() {
 
