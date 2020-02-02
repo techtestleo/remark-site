@@ -13,38 +13,19 @@ A static html blog powered by unififed & sass.
 6. Start nginx container
 7. Refresh page to see updates
 
-# notes for v2 approach
+# Features
 
-## Goals
+## Type Fighter
 
-## Input
+A clicker-esque typing game. 
 
-- /content directory with .MD files
-- JSON / static ref to category & page themes
-- website metadata
+### Todos
 
-YAML style header for frontmatter:
+* Now that core elements are in, look at DOM structure for entire game.
+* Refactor any view updating code to better accomodate animations.
+* Refactor scss so that styling classes are no longer ids. This should slim down `game.theme.css`
+* Balancing - Letter is most powerful upgrades. Increasing line/word length is a penalty, not a buff. 
 
-```yaml
----
-title: Foobar goes to Hollywood
-category: story
-date: "2016-08-05 09:44:16"
-tags:
-  - america
-  - music
-  - technology
----
-```
+### New features
 
-## Output
-
-Static HTML blog:
-
-/index.html
-  --/{category-a}/index.html
-    --/{title}
-    --/{title}
-  --/{category-b}//index.html
-    --/{title}
-    --/{title}
+* Email from boss / random event: Modal / pop up notification. When click, chance at a random upgrade with flavour text.
