@@ -37,6 +37,10 @@ class Game {
       this.memory.keyDown(ev);
       this.view.update(ev);
     });
+    this.capture.bindClick((ev) => {
+      this.memory.onClick(ev);
+      this.view.update(ev);
+    })
   }
 }
 

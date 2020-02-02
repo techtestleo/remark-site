@@ -8,8 +8,8 @@ class MemoryState {
   pointRef = {}
   robot = null;
   robotOptions = {
-    rate: 500,
-    cost: 750,
+    rate: 50,
+    cost: 50,
     upgradeRate: 25
   }
   view = {
@@ -51,7 +51,7 @@ class MemoryState {
   sectionRate = 4;
   pageRate = 3;
   playerStats = {
-    earnings: 5,
+    earnings: 5000000000,
     letters: 0,
     words: 0,
     lines: 0,
@@ -62,6 +62,9 @@ class MemoryState {
     this.downEvent = null;
     this.upEvent = null;
     this.view.currentTarget = this.view.currentLine[0][0];
+  }
+  onClick(ev) {
+    console.log(ev);
   }
   ascend() {
     document.getElementById('stats-container').removeChild(document.getElementById('robot-button-wrap'));

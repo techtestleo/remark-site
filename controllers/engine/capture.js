@@ -9,4 +9,9 @@ class Capture {
       handler(ev);
     });
   }
+  bindClick(handler) {
+    document.addEventListener('pointerdown', (ev) => {
+      handler(ev);
+    })
+  }
 }

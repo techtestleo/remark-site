@@ -20,6 +20,7 @@ class View {
       this.updateNotifications();
     }
   }
+
   updateNotifications() {
     if (document.getElementById('linesComplete-ref-show')) {
       document.getElementById('linesComplete-ref-show').id = 'linesComplete-ref'
