@@ -35,6 +35,10 @@ class MemoryState {
     sections: 0.75,
     pages: 2.5,
   }
+  inputUpgradeCosts = {
+    baseWordLength: 5,
+    baseLineLength: 10,
+  }
   costs = {
     letters: 10,
     words: 25,
@@ -73,6 +77,14 @@ class MemoryState {
     if (document.getElementById(`${upgradeCategory}Complete-ref`)) {
       document.getElementById(`${upgradeCategory}Complete-ref`).innerHTML = `+$${this.rates[upgradeCategory]} ${upgradeCategory} complete!`;
     }
+
+  }
+  // inputUpgradeCosts
+  handleInputUpgrade(inputUpgradeCategory) {
+    this[inputUpgradeCategory] += 1;
+    this.inputUpgradeCosts[inputUpgradeCategory] = Number((this.inputUpgradeCosts[inputUpgradeCategory] * 1.5).toFixed(2))
+    document.getElementById(inputUpgradeCategory).innerHTML = `$${this.inputUpgradeCosts[inputUpgradeCategory]}`;
+    document.getElementById(`upgrade-${inputUpgradeCategory}`).innerHTML = `${inputUpgradeCategory.split('Length')[0].split('base')[1]} length: ${this[inputUpgradeCategory]}`.toLowerCase();
 
   }
   purchaseUpgrade(ev) {
@@ -348,11 +360,14 @@ class View {
 
     const upgradeWord = document.createElement('div');
     document.getElementById('upgrade-word-wrap').appendChild(upgradeWord);
-    upgradeWord.id = 'upgrade-word-length'
-    upgradeWord.innerHTML = 'word length:';
+    upgradeWord.id = 'upgrade-baseWordLength'
+    upgradeWord.innerHTML = `word length: ${this.gameStateRef.baseWordLength}`;
 
     const upgradeWordButton = document.createElement('button');
-    upgradeWordButton.innerHTML = `$5`;
+    upgradeWordButton.innerHTML = `$${this.gameStateRef.inputUpgradeCosts.baseWordLength}`;
+    upgradeWordButton.id = `baseWordLength`;
+    upgradeWordButton.onclick = (ev) => { this.gameStateRef.handleInputUpgrade(ev.target.id) }
+
     document.getElementById('upgrade-word-wrap').appendChild(upgradeWordButton);
 
     const upgradeLineWrap = document.createElement('div');
@@ -362,17 +377,36 @@ class View {
 
     const upgradeLine = document.createElement('div');
     document.getElementById('upgrade-line-wrap').appendChild(upgradeLine);
-    upgradeLine.id = 'upgrade-Line-length'
-    upgradeLine.innerHTML = 'line length:';
+    upgradeLine.id = 'upgrade-baseLineLength'
+    upgradeLine.innerHTML = `line length: ${this.gameStateRef.baseLineLength}`;
 
     const upgradeLineButton = document.createElement('button');
-    upgradeLineButton.innerHTML = `$10`;
+    upgradeLineButton.innerHTML = `$${this.gameStateRef.inputUpgradeCosts.baseLineLength}`;
+    upgradeLineButton.id = `baseLineLength`;
+    upgradeLineButton.onclick = (ev) => { this.gameStateRef.handleInputUpgrade(ev.target.id) }
     document.getElementById('upgrade-line-wrap').appendChild(upgradeLineButton);
 
     document.getElementById('stats-container').appendChild(
       document.createElement('hr')
     )
 
+    const purchaseBotWrap = document.createElement('div');
+    purchaseBotWrap.id = 'upgrade-bot-wrap';
+    purchaseBotWrap.className = 'rate';
+    document.getElementById('stats-container').appendChild(purchaseBotWrap);
+
+    const purchaseBot = document.createElement('div');
+    document.getElementById('upgrade-bot-wrap').appendChild(purchaseBot);
+    purchaseBot.id = 'upgrade-bot-length'
+    purchaseBot.innerHTML = 'puchase bot: ';
+
+    const purchaseBotButton = document.createElement('button');
+    purchaseBotButton.innerHTML = `$150`;
+    document.getElementById('upgrade-bot-wrap').appendChild(purchaseBotButton);
+
+
+
+    //
     const innerPointsContainer = document.createElement('div');
     document.getElementById('outer-container').appendChild(innerPointsContainer);
     innerPointsContainer.id = 'points-container';
