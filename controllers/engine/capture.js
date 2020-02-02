@@ -16,6 +16,7 @@ class Capture {
   bindKeyDown() {
     document.addEventListener('keydown', (ev) => {
       this.onKeydown(ev);
+      this.gameStateRef.updateNotifications();
     });
   }
   /**

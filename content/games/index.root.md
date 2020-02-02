@@ -10,3 +10,5 @@
 ## Browser games
 
 ## [Type Fighter](/games/type-fighter/)
+
+## [Type Fighter](/games/guildhall/)

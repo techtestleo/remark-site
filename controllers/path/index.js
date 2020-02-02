@@ -69,14 +69,22 @@ const renameFiles = (filePaths) => {
  * @param {string} fName 
  */
 const scriptInjector = (fName) => {
-  if (!fName.includes('type-fighter/index.game.md')) {
-
-    return []
+  if (fName.includes('type-fighter/index.game.md')) {
+    return [
+      vfile.readSync('./controllers/typefighter/util/index.js', 'utf8').contents,
+      vfile.readSync('./controllers/engine/capture.js', 'utf8').contents,
+      vfile.readSync('./controllers/engine/robot.js', 'utf8').contents,
+      vfile.readSync('./controllers/engine/view.js', 'utf8').contents,
+      vfile.readSync('./controllers/engine/memory.js', 'utf8').contents,
+      vfile.readSync('./controllers/typefighter/index.js', 'utf8').contents
+    ]
+  } else if (fName.includes('guildhall/index.game.md')) {
+    return [
+      vfile.readSync('./controllers/guildhall/index.js', 'utf8').contents
+    ]
+  } else {
+    return [];
   }
-  return [
-    vfile.readSync('./controllers/typefighter/util/index.js', 'utf8').contents,
-    vfile.readSync('./controllers/typefighter/index.js', 'utf8').contents
-  ]
 }
 
 
