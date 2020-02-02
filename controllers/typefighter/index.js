@@ -1,36 +1,14 @@
 /*
 ----------------- Type fighter mini game -----------------
 
-keyboard capture class
+Core game state variables
 
-state class
+Event capture & update propagation
 
+Document manipulation
 
 
 */
-class Robot {
-  gameStateRef = null;
-  ticker = null;
-  constructor(options) {
-    this.gameStateRef = options;
-  }
-  typeLetter() {
-    this.gameStateRef.lastPressWasHit = true;
-    this.gameStateRef.updateMemory();
-    this.gameStateRef.endPressUpdate();
-  }
-  start() {
-    this.ticker = setInterval(() => {
-      this.typeLetter();
-    }, this.gameStateRef.robotOptions.rate);
-  }
-  reset() {
-    clearInterval(this.ticker);
-  }
-  increaseRate() {
-    this.gameStateRef.increaseRate();
-  }
-}
 
 class MemoryState {
   upEvent = null;
@@ -43,7 +21,8 @@ class MemoryState {
   robot = null;
   robotOptions = {
     rate: 500,
-    cost: 500
+    cost: 750,
+    upgradeRate: 25
   }
   view = {
     // Array of words (words = array of letters)
@@ -57,34 +36,34 @@ class MemoryState {
     eventTime: 0
   }
   rates = {
-    letters: 0.02,
-    words: 0.05,
+    letters: 0.05,
+    words: 0.10,
     lines: 0.25,
-    sections: 0.75,
-    pages: 2.5,
+    sections: 0.50,
+    pages: 1.5,
   }
   inputUpgradeCosts = {
     baseWordLength: 5,
     baseLineLength: 10,
   }
   costs = {
-    letters: 1,
-    words: 15,
-    lines: 30,
-    sections: 75,
-    pages: 250,
+    letters: 15,
+    words: 7.5,
+    lines: 5,
+    sections: 2.5,
+    pages: 1,
   }
   upgradeRate = {
-    letters: 0.5,
-    words: 0.75,
-    lines: 1.1,
-    sections: 1.75,
-    pages: 2.23,
+    letters: 1.98,
+    words: 1.75,
+    lines: 1.51,
+    sections: 1.27,
+    pages: 1.15,
   }
-  sectionRate = 2;
-  pageRate = 2;
+  sectionRate = 4;
+  pageRate = 3;
   playerStats = {
-    earnings: 0,
+    earnings: 5,
     letters: 0,
     words: 0,
     lines: 0,
@@ -96,11 +75,29 @@ class MemoryState {
     this.upEvent = null;
     this.view.currentTarget = this.view.currentLine[0][0];
   }
+  ascend() {
+    document.getElementById('stats-container').removeChild(document.getElementById('robot-button-wrap'));
+    let ascendButton = document.createElement('button');
+    document.getElementById('stats-container').appendChild(ascendButton);
+    ascendButton.innerHTML = 'start again';
+    ascendButton.onclick = (ev) => {
+      this.robot.reset();
+      main.reset();
+    }
+  }
   increaseRate() {
-    this.robotOptions.rate = Number(this.robotOptions.rate - 25);
+    this.robotOptions.upgradeRate = Number(this.robotOptions.upgradeRate - 1);
+    if (this.robotOptions.upgradeRate === 0) {
+      this.robotOptions.upgradeRate = 1;
+    }
+    this.robotOptions.rate = Number(this.robotOptions.rate - this.robotOptions.upgradeRate);
+    if (this.robotOptions.rate < 0) {
+      this.ascend();
+    }
+    this.robotOptions.cost = Number(this.robotOptions.cost * 1.1);
   }
   handleUpgrade(upgradeCategory) {
-    this.rates[upgradeCategory] = Number((this.rates[upgradeCategory] * (1 + this.upgradeRate[upgradeCategory])).toFixed(2));
+    this.rates[upgradeCategory] = Number((this.rates[upgradeCategory] * (this.upgradeRate[upgradeCategory])).toFixed(2));
     if (document.getElementById(`${upgradeCategory}Complete-ref`)) {
       document.getElementById(`${upgradeCategory}Complete-ref`).innerHTML = `+$${this.rates[upgradeCategory]} ${upgradeCategory} complete!`;
     } else if (document.getElementById(`${upgradeCategory}Complete-ref-show`)) {
@@ -119,7 +116,7 @@ class MemoryState {
   }
   purchaseBot(ev) {
     if (this.playerStats.earnings > this.robotOptions.cost) {
-
+      this.playerStats.earnings -= this.robotOptions.cost;
       document.getElementById('stats-container').removeChild(
         document.getElementById('upgrade-bot-wrap')
       );
@@ -166,14 +163,15 @@ class MemoryState {
           this.robot.increaseRate();
           this.robotOptions.cost = Number((this.robotOptions.cost * 2).toFixed(2));
           rateText.innerHTML = `Rate: ${this.robotOptions.rate}ms`;
-          incBtn.innerHTML = `reduce by 25ms - cost: $${this.robotOptions.cost}`;
+          incBtn.innerHTML = `reduce by ${this.robotOptions.upgradeRate}ms - cost: $${this.robotOptions.cost}`;
+          document.getElementById('earnings-ref').innerHTML = `earnings: $${this.playerStats.earnings}`;
         }
       };
-      incBtn.innerHTML = `reduce by 25ms - cost: $${this.robotOptions.cost}`;
+      incBtn.innerHTML = `reduce by ${this.robotOptions.upgradeRate}ms - cost: $${this.robotOptions.cost}`;
       incBtn.id = 'robot-inc';
       btnWrap.appendChild(incBtn);
 
-
+      document.getElementById('earnings-ref').innerHTML = `earnings: $${this.playerStats.earnings}`;
     }
   }
   purchaseUpgrade(ev) {
@@ -192,7 +190,7 @@ class MemoryState {
       if (document.getElementById('upgradeComplete-ref')) {
         document.getElementById('upgradeComplete-ref').id = 'upgradeComplete-ref-show';
       }
-      document.getElementById('earnings-ref').innerHTML = `earnings: ${this.playerStats.earnings}`;
+      document.getElementById('earnings-ref').innerHTML = `earnings: $${this.playerStats.earnings}`;
       document.getElementById(`upgrade-${ev.target.id}`).innerHTML = `${ev.target.id}: $${this.rates[ev.target.id]}`;
     }
 
@@ -294,7 +292,7 @@ class MemoryState {
             document.getElementById('pagesComplete-ref').id = 'pagesComplete-ref-show'
           }
         }
-        if (this.pageRate % 2 === 0) {
+        if (this.pageRate % 5 === 0) {
           this.baseLineLength++;
           document.getElementById(`upgrade-baseLineLength`).innerHTML = `line length: ${this.baseLineLength}`;
         }
@@ -385,7 +383,6 @@ class View {
   constructor(gameStateRef) {
     this.gameStateRef = gameStateRef;
     this.setup();
-
   }
 
   setup() {
@@ -502,10 +499,10 @@ class View {
     const purchaseBot = document.createElement('div');
     document.getElementById('upgrade-bot-wrap').appendChild(purchaseBot);
     purchaseBot.id = 'upgrade-bot-length'
-    purchaseBot.innerHTML = 'puchase bot: ';
+    purchaseBot.innerHTML = 'purchase bot: ';
 
     const purchaseBotButton = document.createElement('button');
-    purchaseBotButton.innerHTML = `$150`;
+    purchaseBotButton.innerHTML = `$${this.gameStateRef.robotOptions.cost}`;
     document.getElementById('upgrade-bot-wrap').appendChild(purchaseBotButton);
     purchaseBotButton.onclick = (ev) => {
       this.gameStateRef.purchaseBot(ev);
@@ -600,6 +597,18 @@ class Game {
   memory = null;
   view = null;
   constructor() {
+    this.build();
+  }
+  reset(earnings) {
+    this.capture = null;
+    this.memory = null;
+    this.view = null;
+    document.body.removeChild(
+      document.getElementById('master-container')
+    )
+    this.build(earnings);
+  }
+  build(earnings) {
     // Create the global game state
     this.memory = new MemoryState();
     // Bind the capture methods, with ref. to global state

@@ -24,6 +24,22 @@
   hr {
     margin: 16px 0px;
   }
+    button {
+    flex-shrink: 0;
+    min-width: 50%;
+    font-size: $font-size-contents;
+    font-style: italic;
+    height: 10*$unit;
+    white-space: nowrap;
+    border-radius: 4*$unit;
+    box-shadow: 1.5*$unit 1.5*$unit $core-bg;
+    background-color: $core-bg;
+    color: $core-high;
+  }
+  button:active {
+     background-color: $core-high;
+       color: $core-bg;
+  }
 }
 
 #outer-container {
