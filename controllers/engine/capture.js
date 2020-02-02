@@ -1,34 +1,15 @@
 class Capture {
-  gameStateRef = null;
-  constructor(gameStateRef) {
-    this.gameStateRef = gameStateRef;
-    this.bindEvents();
-  }
-  bindEvents() {
-    this.bindKeyDown();
-    this.bindKeyUp();
-  }
-  bindKeyUp() {
+  bindKeyUp(memoryRef) {
+    console.log(memoryRef);
     document.addEventListener('keyup', (ev) => {
-      this.onKeyUp(ev);
+      memoryRef.keyUp(ev);
     });
   }
-  bindKeyDown() {
+  bindKeyDown(memoryRef) {
+    console.log(memoryRef);
     document.addEventListener('keydown', (ev) => {
-      this.onKeydown(ev);
-      this.gameStateRef.updateNotifications();
+      memoryRef.keyDown(ev);
+      memoryRef.updateNotifications();
     });
-  }
-  /**
-   * @param {KeyboardEvent} e 
-   */
-  onKeyUp(e) {
-    this.gameStateRef.keyUp(e);
-  }
-  /**
-   * @param {KeyboardEvent} e
-   */
-  onKeydown(e) {
-    this.gameStateRef.keyDown(e);
   }
 }

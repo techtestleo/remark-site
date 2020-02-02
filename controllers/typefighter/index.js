@@ -22,20 +22,15 @@ class Game {
     // Create the global game state
     this.memory = new MemoryState();
     // Bind the capture methods, with ref. to global state
-    this.capture = new Capture(this.memory);
+    this.capture = new Capture();
     // Create the game view, and bind to global state
     this.view = new View(this.memory);
-    // logger
-    /*
-    
-    this.capture = new Capture();
-
-    this.memory = new Memory(this.capture);
-    
-    
-    
-    
-    */
+    // binding events & updates
+    this.bind();
+  }
+  bind() {
+    this.capture.bindKeyUp(this.memory);
+    this.capture.bindKeyDown(this.memory);
   }
 }
 
