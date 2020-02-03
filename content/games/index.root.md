@@ -11,4 +11,4 @@
 
 ## [Type Fighter](/games/type-fighter/)
 
-## [Type Fighter](/games/guildhall/)
+## [Guild Hall](/games/guildhall/)
