@@ -80,7 +80,13 @@ const scriptInjector = (fName) => {
     ]
   } else if (fName.includes('guildhall/index.game.md')) {
     return [
-      vfile.readSync('./controllers/guildhall/index.js', 'utf8').contents
+      vfile.readSync('./controllers/guildhall/engine/capture.js', 'utf8').contents,
+      vfile.readSync('./controllers/guildhall/engine/hero.js', 'utf8').contents,
+      vfile.readSync('./controllers/guildhall/engine/item.js', 'utf8').contents,
+      vfile.readSync('./controllers/guildhall/engine/memory.js', 'utf8').contents,
+      vfile.readSync('./controllers/guildhall/engine/state.js', 'utf8').contents,
+      vfile.readSync('./controllers/guildhall/engine/view.js', 'utf8').contents,
+      vfile.readSync('./controllers/guildhall/index.js', 'utf8').contents,
     ]
   } else {
     return [];
