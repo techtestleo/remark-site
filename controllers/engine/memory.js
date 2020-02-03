@@ -89,11 +89,6 @@ class MemoryState {
   }
   handleUpgrade(upgradeCategory) {
     this.rates[upgradeCategory] = Number((this.rates[upgradeCategory] * (this.upgradeRate[upgradeCategory])).toFixed(2));
-    if (document.getElementById(`complete-ref`)) {
-      document.getElementById(`complete-ref`).innerHTML = `+$${this.rates[upgradeCategory]} ${upgradeCategory} complete!`;
-    } else if (document.getElementById(`complete-ref-show`)) {
-      document.getElementById(`complete-ref-show`).innerHTML = `+$${this.rates[upgradeCategory]} ${upgradeCategory} complete!`;
-    }
 
   }
   // inputUpgradeCosts
@@ -101,8 +96,6 @@ class MemoryState {
     if (this.playerStats.earnings > this.inputUpgradeCosts[inputUpgradeCategory]) {
       this[inputUpgradeCategory] += 1;
       this.inputUpgradeCosts[inputUpgradeCategory] = Number((this.inputUpgradeCosts[inputUpgradeCategory] * 1.5).toFixed(2))
-      document.getElementById(inputUpgradeCategory).innerHTML = `$${this.inputUpgradeCosts[inputUpgradeCategory]}`;
-      document.getElementById(`upgrade-${inputUpgradeCategory}`).innerHTML = `${inputUpgradeCategory.split('Length')[0].split('base')[1]} length: ${this[inputUpgradeCategory]}`.toLowerCase();
     }
   }
   purchaseBot(ev) {
@@ -178,14 +171,6 @@ class MemoryState {
       // update upgrade notification
       this.handleUpgrade(ev.target.id);
 
-      if (document.getElementById('upgradeComplete-ref').className === 'complete-ref') {
-        document.getElementById('upgradeComplete-ref').className = 'cmplete-ref-show';
-      } else if (document.getElementById('upgradeComplete-ref').className === 'complete-ref-show') {
-        document.getElementById('upgradeComplete-ref').className = 'cmplete-ref';
-
-      }
-      document.getElementById('earnings-ref').innerHTML = `earnings: $${this.playerStats.earnings}`;
-      document.getElementById(`upgrade-${ev.target.id}`).innerHTML = `${ev.target.id}: $${this.rates[ev.target.id]}`;
     }
 
   }
@@ -221,7 +206,6 @@ class MemoryState {
     // update current line
     this.wordRefs.forEach((reference, i) => {
       if (this.view.currentLine[i]) {
-
         document.getElementById(reference).innerHTML = this.view.currentLine[i].join('');
       } else {
         document.getElementById(reference).innerHTML = '???';
@@ -253,53 +237,28 @@ class MemoryState {
       this.view.currentLine.shift();
       this.playerStats.words++;
       this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.words)
-      if (document.getElementById('wordsComplete-ref').className === 'complete-ref') {
-        document.getElementById('wordsComplete-ref').className = 'complete-ref-show'
-      } else if (document.getElementById('wordsComplete-ref').className === 'complete-ref-show') {
-        document.getElementById('wordsComplete-ref').className = 'complete-ref'
 
-      }
     }
     // go to the next line if the current line is done
     if (this.view.currentLine.length === 0) {
-      // this.baseWordLength++;
-      // this.baseLineLength++;
+
       this.view.currentLine = createLine(this.baseWordLength, this.baseWordLength);
       this.playerStats.lines++;
       this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.lines)
-      if (document.getElementById('linesComplete-ref').className === 'complete-ref') {
-        document.getElementById('linesComplete-ref').className = 'cmplete-ref-show';
-      } else if (document.getElementById('linesComplete-ref').className === 'complete-ref-show') {
-        document.getElementById('linesComplete-ref').className = 'cmplete-ref';
-
-      }
       // increment sections
       if (this.playerStats.lines % this.sectionRate === 0) {
         this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.sections)
         this.playerStats.sections++
 
-        if (document.getElementById('sectionsComplete-ref').className === 'complete-ref') {
-          document.getElementById('sectionsComplete-ref').className = 'complete-ref-show'
-        } else if (document.getElementById('sectionsComplete-ref').className === 'complete-ref-show') {
-          document.getElementById('sectionsComplete-ref').className = 'complete-ref'
-
-        }
         // increment page
         if (this.playerStats.sections % this.pageRate === 0) {
           this.playerStats.earnings = Number(this.playerStats.earnings + this.rates.pages)
           this.playerStats.pages++
           this.baseWordLength++;
-          document.getElementById(`upgrade-baseWordLength`).innerHTML = `word length: ${this.baseWordLength}`;
-          if (document.getElementById('pagesComplete-ref').className === 'complete-ref') {
-            document.getElementById('pagesComplete-ref').className = 'complete-ref-show'
-          } else if (document.getElementById('pagesComplete-ref').className === 'complete-ref-show') {
-            document.getElementById('pagesComplete-ref').className = 'complete-ref'
 
-          }
         }
         if (this.pageRate % 5 === 0) {
           this.baseLineLength++;
-          document.getElementById(`upgrade-baseLineLength`).innerHTML = `line length: ${this.baseLineLength}`;
         }
       }
     }

@@ -24,10 +24,9 @@ class View {
   updateNotifications() {
     const shown = document.getElementsByClassName('complete-ref-show');
     if (shown.length > 0) {
-      console.log(shown)
-      shown.forEach((ele) => {
-        ele.className = 'complete-ref';
-      })
+      for (var i = 0; i < shown.length; i++) {
+        shown[i].className = 'complete-ref';
+      }
     }
   }
 
