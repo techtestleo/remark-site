@@ -53,20 +53,14 @@ class Main {
   bind() {
     this.capture.bindKeyUp((ev) => {
       this.eventHandler(ev).then((res) => {
-        console.log('events done!', ev);
-        console.log('events done!', res);
       });
     });
     this.capture.bindKeyDown((ev) => {
       this.eventHandler(ev).then((res) => {
-        console.log('events done!', ev);
-        console.log('events done!', res);
       });
     });
     this.capture.bindClick((ev) => {
       this.eventHandler(ev).then((res) => {
-        console.log('events done!', ev);
-        console.log('events done!', res);
       });
     });
   }
@@ -75,7 +69,6 @@ class Main {
       this.debounceEvents(
         this.eventFormatter(ev)
       ).then((resolveEvent) => {
-        console.log('resolved:', resolveEvent);
         if (resolveEvent !== null) {
           // update the view
           this.view.update(resolveEvent).then(() => {
@@ -144,10 +137,7 @@ class Memory {
         });
 
       } else if (formattedEvent.type === 'keyboard') {
-        // resolve({
-        //   toUpdate: toUpdate.updates,
-        //   originId: formattedEvent.id
-        // });
+        // handle keyboard events
         resolve({
           toUpdate: [],
           value: null,
@@ -187,16 +177,6 @@ class View {
   setup() {
     document.getElementsByClassName('footnotes')[0].appendChild(this.viewContainer);
     this.viewContainer.id = 'view-box';
-    this.example();
-  }
-  example() {
-    let x = Object.entries(this.stateMap.clicks);
-    x.forEach((entryPair) => {
-      let newBtn = document.createElement('button');
-      newBtn.id = entryPair[0];
-      newBtn.innerHTML = entryPair[1].value;
-      this.viewContainer.appendChild(newBtn)
-    })
   }
   update(completedEvent) {
     return new Promise((resolve, reject) => {
