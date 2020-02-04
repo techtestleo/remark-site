@@ -36,12 +36,11 @@ class Main {
   }
   eventHandler = (ev) => {
     return new Promise((resolve, reject) => {
-      this.debounceEvents(
-        this.eventFormatter(ev)
-      ).then((resolveEvent) => {
+      // call th event debouncer with a formatted event
+      this.debounceEvents(this.eventFormatter(ev)).then((resolveEvent) => {
         if (resolveEvent !== null) {
-          this.isPainting = true;
           // update the view
+          this.isPainting = true;
           this.view.update(resolveEvent).then(() => {
             this.isPainting = false;
             resolve(resolveEvent);

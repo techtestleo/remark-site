@@ -3,17 +3,18 @@ class Memory {
   constructor(options) {
     this.stateMap = options.stateMap;
   }
+  updateStatemap(newStateMap) {
+    this.stateMap = newStateMap;
+  }
   receiveEvents(formattedEvent) {
     return new Promise((resolve, reject) => {
-      this.dispatch(formattedEvent).then((completedEvent) => {
-        resolve(completedEvent);
-      });
+      this.dispatch(formattedEvent).then((completedEvent) => { resolve(completedEvent); });
     })
 
   }
   dispatch(formattedEvent) {
     return new Promise((resolve, reject) => {
-      // memory updates
+      // mouse events
       if (formattedEvent.type === 'mouse') {
         // click events occur on buttons.
         // buttons increment or decement, based on their context
@@ -29,16 +30,15 @@ class Memory {
           value: toUpdate ? toUpdate.value : null,
           originId: formattedEvent.id
         });
-
-      } else if (formattedEvent.type === 'keyboard') {
-        // handle keyboard events
+      }
+      // keyboard events
+      if (formattedEvent.type === 'keyboard') {
         resolve({
           toUpdate: [],
           value: null,
           originId: null
         });
       }
-
     })
   }
 }

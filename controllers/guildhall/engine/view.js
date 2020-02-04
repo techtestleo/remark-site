@@ -13,7 +13,7 @@ class View {
     return new Promise((resolve, reject) => {
       completedEvent.toUpdate.forEach((id_ref) => {
         this.repaint(id_ref, completedEvent.value);
-      })
+      });
       resolve();
     });
   }
