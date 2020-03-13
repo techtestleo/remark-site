@@ -13,6 +13,10 @@ const theme_names = process.env.theme_names.split(',') || ['tech', 'story', 'roo
 
 const splitFileName = (fName) => { return fName.split('/'); }
 
+/**
+ * Capture all valid themes that exist on a filepath. 
+ * @param {string} fName 
+ */
 const captureThemes = (fName) => {
   let possibleThemes = splitFileName(fName);
   let x = possibleThemes[possibleThemes.length - 1]
@@ -20,6 +24,10 @@ const captureThemes = (fName) => {
   return y.filter(theme => theme_names.includes(theme));
 }
 
+/**
+ * Find the relevant stylesheet from a theme name, in a file path. 
+ * @param {string} fName Filename that is looking for a theme.
+ */
 const getDocCss = (fName) => {
   let themes = captureThemes(fName);
   let refPath = path.relative(fName, `${fName.split(in_dir)[0]}/${in_dir}/`);
@@ -34,27 +42,49 @@ const getDocCss = (fName) => {
   final.push({
     rel: 'shortcut icon',
     href: '/favicon.ico'
-  })
-  // add other links
-  //
+  });
   return final;
 }
 
-const getName = (fName) => {
+/**
+ * Returns the name portion of a filename with [name].[theme].[ext]
+ * Used to generate the document title.
+ * @param {string} fName Filename
+ */
+const getDocumentName = (fName) => {
+  // We first get each element of the filename by splitting on '/'
   let x = splitFileName(fName)
+  // We then grab the last element in this array. This element will always contain
+  // the name & theme name of the file: example.foo.md
   let y = splitFileName(fName)[x.length - 1];
-  return y.split('.')[0];
+  // We then split the file name on '.', and look at the first element in this array
+  // This element will be the name of the file. 
+  let name = y.split('.')[0];
+  log(name, 's');
+  // Capitalise the title.
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
+/**
+ * Generates a correct filename from an unprocessed filename. 
+ * @param {string} fName Filename to process. 
+ */
 const makeFileName = (fName) => {
+   // We first get each element of the filename by splitting on '/'
   let x = splitFileName(fName);
   return fName
+  // Replace in_dir name with out_dir name.
     .replace(in_dir, out_dir)
     .replace(
+      // We need to replace any '[name].[theme].md' with '[name].html'
       splitFileName(fName)[x.length - 1],
       splitFileName(fName)[x.length - 1].split('.')[0]) + '.html';
 }
 
+/**
+ * Finds and renames each file in place.
+ * @param {string[]} filePaths Array of files to rename
+ */
 const renameFiles = (filePaths) => {
   filePaths.forEach((fName) => {
     fs.renameSync(
@@ -65,7 +95,13 @@ const renameFiles = (filePaths) => {
 }
 
 /**
- * Checks if we should inject javascript.
+ * Bespoke script injector.
+ * 
+ * TODO: Instead of specifiying each script to run, we should specify
+ * a directory from which to inject. All scripts in this directory should
+ * be injected into the requisite file. Any shared functions or helpers 
+ * should be in a /helper directory. 
+ * 
  * @param {string} fName 
  */
 const scriptInjector = (fName) => {
@@ -93,7 +129,6 @@ const scriptInjector = (fName) => {
   }
 }
 
-
 module.exports = {
-  renameFiles, getDocCss, getName, splitFileName, scriptInjector
+  renameFiles, getDocCss, getDocumentName, splitFileName, scriptInjector
 }

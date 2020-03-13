@@ -13,6 +13,12 @@ A static html blog powered by unififed & sass.
 6. Start nginx container
 7. Refresh page to see updates
 
+## Getting started
+
+- What is this?
+- How do I use this?
+- Why?
+
 # Features
 
 ## Type Fighter
