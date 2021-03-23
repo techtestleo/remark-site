@@ -1,3 +1,7 @@
+html {
+    font-family: Futura, sans-serif;
+}
+
 body {
     display: grid;
     grid-template-columns: 1fr calc(min(60ch, calc(100% - 64px))) 1fr;

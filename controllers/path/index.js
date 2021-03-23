@@ -73,24 +73,10 @@ const renameFiles = (filePaths) => {
  * @param {string} fName 
  */
 const scriptInjector = (fName) => {
+  //TODO: change this to inject new demo apps
   if (fName.includes('type-fighter/index.typer.md')) {
     return [
       vfile.readSync('./controllers/typefighter/util/index.js', 'utf8').contents,
-      vfile.readSync('./controllers/engine/capture.js', 'utf8').contents,
-      vfile.readSync('./controllers/engine/robot.js', 'utf8').contents,
-      vfile.readSync('./controllers/engine/view.js', 'utf8').contents,
-      vfile.readSync('./controllers/engine/memory.js', 'utf8').contents,
-      vfile.readSync('./controllers/typefighter/index.js', 'utf8').contents
-    ]
-  } else if (fName.includes('guildhall/index.guild.md')) {
-    return [
-      vfile.readSync('./controllers/guildhall/engine/capture.js', 'utf8').contents,
-      vfile.readSync('./controllers/guildhall/engine/hero.js', 'utf8').contents,
-      vfile.readSync('./controllers/guildhall/engine/item.js', 'utf8').contents,
-      vfile.readSync('./controllers/guildhall/engine/memory.js', 'utf8').contents,
-      vfile.readSync('./controllers/guildhall/engine/state.js', 'utf8').contents,
-      vfile.readSync('./controllers/guildhall/engine/view.js', 'utf8').contents,
-      vfile.readSync('./controllers/guildhall/index.js', 'utf8').contents,
     ]
   } else {
     return [];
