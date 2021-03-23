@@ -9,9 +9,13 @@ var vfile = require('to-vfile');
 require('dotenv').config();
 const out_dir = process.env.build_directory || 'out';
 const in_dir = process.env.inbound_md_directory || 'content';
+const system = process.env.system || 'windows';
 const theme_names = process.env.theme_names.split(',') || ['tech', 'story', 'root', 'home'];
 
-const splitFileName = (fName) => { return fName.split('/'); }
+// TODO: this filename split is \\ on windows and / on mac..
+
+const splitter = system == 'windows' ? '\\' : '/';
+const splitFileName = (fName) => { return fName.split(splitter); }
 
 const captureThemes = (fName) => {
   let possibleThemes = splitFileName(fName);
