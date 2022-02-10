@@ -31,7 +31,7 @@
     "dictionary-en-gb": "^2.1.1",
     "dotenv": "^8.2.0",
     "ncp": "^2.0.0",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "npm-watch": "^0.6.0",
     "rehype-document": "^3.2.1",
     "rehype-format": "^3.0.0",
